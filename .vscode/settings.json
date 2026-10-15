@@ -22,8 +22,13 @@
   "workbench.colorTheme": "Dark+",
   "workbench.iconTheme": "vscode-icons",
   "github.copilot.enable": {
+    "*": false,
+    "plaintext": false,
+    "markdown": false,
+    "scminput": false,
     "cpp": false,
-    "c": false
+    "c": false,
+    "yaml": false
   },
   "chat.agent.enabled": false,
   "C_Cpp.default.cppStandard": "c++17",
