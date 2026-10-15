@@ -1,9 +1,12 @@
 # Biomedical Project
 
+> [!IMPORTANT]
+> The project is currently in demo testing stages, and content below are subject to change.
+
 ## Overview of Project
 
 > [!NOTE]
-> Content from Statement of Intent in Biomedical Project Folio
+> Content from Statement of Intent in Biomedical Project Folio.
 
 RockyVisionary is a biomedical mechanical arm that allows the user to control a prosthetic hand that follows the movement of the elbow. It uses a microcontroller, gyroscope, accelerometer, and motors to detect movement and translate it into controlled actions of the hand. Together, these components aim to create a comfortable and lightweight mechanical arm that responds naturally to the user’s movements.
 
@@ -17,11 +20,17 @@ RockyVisionary will help Aaron work towards fulfilling his goal of rock climbing
 
 ## High Level Pictorial
 
-**High Level Pictorial of RockyVisionary R1:**
+> [!WARNING]
+> This is subject to change, and image attached is the first iteration.
 
-![Image of High Level Pictorial for RockyVisionary](images/readme.highLevelPictorial.png)
+<img src="./images/readme.highLevelPictorial.png" width="75%" height="75%" alt="Image of High Level Pictorial with the Raptor Sky Hook and Hand attachments, the arm where attachments attach to with sensor locations and microcontroller.">
+
+_High Level Pictorial of RockyVisionary R1:_
 
 ## Components
+
+> [!NOTE]
+> This is subject to change because the Force Sensitive Sensor (FSR) is not available.
 
 - Force Sensitive Resistor (not available)
 - Gyroscope
