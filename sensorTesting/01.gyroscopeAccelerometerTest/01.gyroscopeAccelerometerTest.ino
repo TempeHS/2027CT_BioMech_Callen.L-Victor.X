@@ -1,27 +1,25 @@
-/*
-MARK: LIBRARIES REQUIRED
-Arduino_Sensorkit
-
-*/
 
 #include "Arduino_SensorKit.h"
-#include <Wire.h>
 
 void setup() {
-  Wire.begin();
+  // put your setup code here, to run once:
   Serial.begin(115200);
+  while(!Serial);
 
-  while (!Serial);
-  Environment.begin();
   Accelerometer.begin();
 }
 
 void loop() {
-  Serial.print("Accel X: ");
-  Serial.print(Accelerometer.readX());
+  // put your main code here, to run repeatedly:
+  // 3 axis
+  Serial.print("x:");
+  Serial.print(Accelerometer.readX());  // Read the X Value
+  Serial.print("  ");
+  Serial.print("y:");
+  Serial.print(Accelerometer.readY());  // Read the Y Value
+  Serial.print("  ");
+  Serial.print("z:");
+  Serial.println(Accelerometer.readZ());// Read the Z Value
 
-  Serial.print(" | Gyro X: ");
-  Serial.println(Gyroscope.readX());
-
-  delay(200);
+  delay(500);
 }
