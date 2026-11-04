@@ -4,7 +4,7 @@
 bool powerOnState = 1;                            // MARK: [TEMPORARY!] Power On State is True
 
 // Create a instance of class LSM6DS3
-LSM6DS3 myIMU(I2C_MODE, 0x6A);                    // Address at 0x6a 
+LSM6DS3 myIMU(I2C_MODE, 0x6A);                    // Address at 0x6a
 float aX, aY, aZ, gX, gY, gZ;
 const float accelerationThreshold = 2.5;          // threshold of significant in G's
 const int numSamples = 119;
@@ -12,7 +12,7 @@ int samplesRead = numSamples;
 
 void setup() {
   Serial.begin(115200);                           // Note: Align with Serial Terminal Number
- 
+
   while (!Serial);
   //Call .begin() to configure the IMUs
   if (myIMU.begin() != 0) {
@@ -23,7 +23,7 @@ void setup() {
 }
 
 void loop() {
-  while (powerOnState = True) {
+  while (powerOnState = 1) {
     // wait for significant motion
 
     unsigned int runNumber = 1;
