@@ -1,10 +1,12 @@
 #include "LSM6DS3.h"
 #include <Wire.h>
 
-bool powerOnState = 1;                            // MARK: [TEMPORARY!] Power On State is True
+// MARK: Custom Variables
+bool powerOnState = 1;                            // [TEMPORARY!] Power On State is True
+unsigned int runNumber = 0;                       // Current Run Number State (unsigned for positive int)
 
 // Create a instance of class LSM6DS3
-LSM6DS3 myIMU(I2C_MODE, 0x6A);                    // Address at 0x6a
+LSM6DS3 gyroAccelSensor(I2C_MODE, 0x6A);                    // Address at 0x6a
 float aX, aY, aZ, gX, gY, gZ;
 const float accelerationThreshold = 2.5;          // threshold of significant in G's
 const int numSamples = 119;
@@ -15,7 +17,7 @@ void setup() {
 
   while (!Serial);
   //Call .begin() to configure the IMUs
-  if (myIMU.begin() != 0) {
+  if (gyroAccelSensor.begin() != 0) {
     Serial.println("Device error");
   } else {
     Serial.println("aX,aY,aZ,gX,gY,gZ");
@@ -26,13 +28,11 @@ void loop() {
   while (powerOnState = 1) {
     // wait for significant motion
 
-    unsigned int runNumber = 1;
-
     while (samplesRead == numSamples) {
       // read the acceleration data
-      aX = myIMU.readFloatAccelX();
-      aY = myIMU.readFloatAccelY();
-      aZ = myIMU.readFloatAccelZ();
+      aX = gyroAccelSensor.readFloatAccelX();
+      aY = gyroAccelSensor.readFloatAccelY();
+      aZ = gyroAccelSensor.readFloatAccelZ();
 
       // sum up the absolutes
       float aSum = fabs(aX) + fabs(aY) + fabs(aZ);
@@ -61,22 +61,22 @@ void loop() {
       Serial.println();
       Serial.println();
       Serial.println("Accelerometer Values");
-      Serial.print(myIMU.readFloatAccelX(), 3);
+      Serial.print(gyroAccelSensor.readFloatAccelX(), 3);
       Serial.print(',');
-      Serial.print(myIMU.readFloatAccelY(), 3);
+      Serial.print(gyroAccelSensor.readFloatAccelY(), 3);
       Serial.print(',');
-      Serial.print(myIMU.readFloatAccelZ(), 3);
+      Serial.print(gyroAccelSensor.readFloatAccelZ(), 3);
       Serial.print(',');
 
 
       Serial.println();
       Serial.println();
       Serial.println("Gryo Values");
-      Serial.print(myIMU.readFloatGyroX(), 3);
+      Serial.print(gyroAccelSensor.readFloatGyroX(), 3);
       Serial.print(',');
-      Serial.print(myIMU.readFloatGyroY(), 3);
+      Serial.print(gyroAccelSensor.readFloatGyroY(), 3);
       Serial.print(',');
-      Serial.print(myIMU.readFloatGyroZ(), 3);
+      Serial.print(gyroAccelSensor.readFloatGyroZ(), 3);
       Serial.println();
       Serial.println();
 
