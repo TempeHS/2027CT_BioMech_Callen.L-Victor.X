@@ -12,23 +12,24 @@
     "/https?:\\/\\/[^\\s)]+/g"
   ],
   "words": [
+    "Accel",
     "Arduino",
     "ARDUINO",
     "Ardunio",
     "Bootcamp",
-    "TINKERCAD",
-    "OLED",
-    "PWMpin",
-    "incrementer",
-    "decrementer",
     "centimeters",
+    "decrementer",
+    "eliotlim",
     "Erick",
+    "incrementer",
     "microcontroller",
     "microcontrollers",
+    "OLED",
+    "otacilio",
+    "Otacilio",
+    "PWMpin",
     "Simoes",
     "Simões",
-    "eliotlim",
-    "Otacilio",
-    "otacilio"
+    "TINKERCAD"
   ]
 }
