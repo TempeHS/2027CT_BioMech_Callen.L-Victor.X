@@ -1,6 +1,10 @@
 #include "LSM6DS3.h"
 #include <Wire.h>
 
+bool powerOnState = 1; // MARK: [TEMPORARY!] Power On State is True
+
+
+
 //Create a instance of class LSM6DS3
 LSM6DS3 myIMU(I2C_MODE, 0x6A);    //I2C device address 0x6A
 float aX, aY, aZ, gX, gY, gZ;
@@ -9,8 +13,10 @@ const int numSamples = 119;
 int samplesRead = numSamples;
 
 void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(115200);
+  Serial.begin(115200); //int. serial port
+  
+  
+
   while (!Serial);
   //Call .begin() to configure the IMUs
   if (myIMU.begin() != 0) {
