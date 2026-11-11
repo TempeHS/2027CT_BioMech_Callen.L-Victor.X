@@ -1,20 +1,36 @@
+
+
+
 /*
-Program at a Glance:
+MARK: Program at a Glance:
 
 1. Uses 6-axis Accel and Gyro Sensor
 2. Prints Accel and Gyro Values
 3. if loop to make decisions (temporarily text)
+
+Sensors to be Plugged IN:
+I2C - 6 AXIS ACCELEROMETER AND GRYROSCOPE
+D6 - BUTTON MODULE
 */
 
+
+
+
+
+// MARK: KEY LIBRARIES
 #include "LSM6DS3.h"
 #include <Wire.h>
+
+
+// MARK: SENSOR MODULES
+LSM6DS3 gyroAccelSensor(I2C_MODE, 0x6A);               // 6 AXIS ACCELEROMETER AND GYROSCOPE on I2C
+const int Button_PIN = 6;                              // BUTTON PIN on D6
 
 // MARK: Custom Variables
 bool powerOnState = 1;                                 // [TEMPORARY!] Power On State is True
 unsigned int runNumber = 0;                            // Current Run Number State (unsigned for positive int)
 
 // Create a instance of class LSM6DS3
-LSM6DS3 gyroAccelSensor(I2C_MODE, 0x6A);               // Address at 0x6a
 float aX, aY, aZ, gX, gY, gZ;
 const float accelerationThreshold = 2.5;               // threshold of significant in G's
 const int numSamples = 119;
@@ -29,7 +45,7 @@ void setup() {
   while (!Serial);
 
   // Initialise gyroAccelSensor and Test Value Print
-  if (gyroAccelSensor.begin() != 0) {                  // Checks if the Sensor returns 0
+  if (gyroAccelSensor.begin() != 0) {                  // Checks if the Sensor returns 0x6A
     Serial.println("Device error");
   } else {                                             // Sensor Print 0 if Failed
     Serial.println("aX,aY,aZ,gX,gY,gZ");
@@ -39,6 +55,7 @@ void setup() {
 // MARK: LOOP SENSOR
 
 void loop() {
+
   while (powerOnState = 1) {
     // wait for significant motion
 
