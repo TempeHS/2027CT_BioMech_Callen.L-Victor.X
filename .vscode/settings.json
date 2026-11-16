@@ -35,5 +35,6 @@
   "C_Cpp.default.cStandard": "c11",
   "C_Cpp.default.compilerPath": "/usr/bin/clang",
   "C_Cpp.default.intelliSenseMode": "linux-clang-x64",
-  "C_Cpp.clang_format_fallbackStyle": "Google"
+  "C_Cpp.clang_format_fallbackStyle": "Google",
+  "arduinoBridge.defaultBoard": "arduino:avr:uno"
 }
