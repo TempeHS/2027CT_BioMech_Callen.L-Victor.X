@@ -23,7 +23,7 @@ RockyVisionary will help Aaron work towards fulfilling his goal of rock climbing
 > [!WARNING]
 > This is subject to change, and image attached is the first iteration.
 
-<img src="./images/readme.highLevelPictorial.png" width="75%" height="75%" alt="Image of High Level Pictorial with the Raptor Sky Hook and Hand attachments, the arm where attachments attach to with sensor locations and microcontroller.">
+<img src="./BioMedical_Mechatronics_Task/images/readme.highLevelPictorial.png" width="75%" height="75%" alt="Image of High Level Pictorial with the Raptor Sky Hook and Hand attachments, the arm where attachments attach to with sensor locations and microcontroller.">
 
 _High Level Pictorial of RockyVisionary R1:_
 
