@@ -9,7 +9,7 @@ MARK: Program at a Glance:
 3. if loop to make decisions (temporarily text)
 
 Sensors to be Plugged IN:
-I2C - 6 AXIS ACCELEROMETER AND GRYROSCOPE
+I2C - 6 AXIS ACCELEROMETER AND GRYOSCOPE
 D6 - BUTTON MODULE
 */
 
@@ -21,13 +21,12 @@ D6 - BUTTON MODULE
 #include "LSM6DS3.h"
 #include <Wire.h>
 
-
 // MARK: SENSOR MODULES
 LSM6DS3 gyroAccelSensor(I2C_MODE, 0x6A);               // 6 AXIS ACCELEROMETER AND GYROSCOPE on I2C
 const int Button_PIN = 6;                              // BUTTON PIN on D6
 
 // MARK: Custom Variables
-bool powerOnState = 1;                                 // [TEMPORARY!] Power On State is True
+bool powerOnState = 0;                                 // [TEMPORARY!] Power On State is True
 unsigned int runNumber = 0;                            // Current Run Number State (unsigned for positive int)
 
 // Create a instance of class LSM6DS3
@@ -50,76 +49,88 @@ void setup() {
   } else {                                             // Sensor Print 0 if Failed
     Serial.println("aX,aY,aZ,gX,gY,gZ");
   }
+
+  // Initialise Button
+  pinMode(Button_PIN, INPUT);
 }
 
 // MARK: LOOP SENSOR
 
 void loop() {
+  delay(20);
 
-  while (powerOnState = 1) {
-    // wait for significant motion
+  if (Button_PIN == HIGH) {
+    powerOnState = 1;
+  }
 
-    while (samplesRead == numSamples) {
-      // read the acceleration data
-      aX = gyroAccelSensor.readFloatAccelX();
-      aY = gyroAccelSensor.readFloatAccelY();
-      aZ = gyroAccelSensor.readFloatAccelZ();
+  while (powerOnState == 1) {
+    if (Button_PIN == HIGH) {
+      powerOnState = 0;
+      break;
+    } else {
+      // wait for significant motion
+      while (samplesRead == numSamples) {
+        // read the acceleration data
+        aX = gyroAccelSensor.readFloatAccelX();
+        aY = gyroAccelSensor.readFloatAccelY();
+        aZ = gyroAccelSensor.readFloatAccelZ();
 
-      // sum up the absolutes
-      float aSum = fabs(aX) + fabs(aY) + fabs(aZ);
+        // sum up the absolutes
+        float aSum = fabs(aX) + fabs(aY) + fabs(aZ);
 
-      // check if it's above the threshold
-      if (aSum >= accelerationThreshold) {
-        // reset the sample read count
-        samplesRead = 0;
-        break;
+        // check if it's above the threshold
+        if (aSum >= accelerationThreshold) {
+          // reset the sample read count
+          samplesRead = 0;
+          break;
+        }
       }
-    }
 
-    // check if the all the required samples have been read since
-    // the last time the significant motion was detected
-    while (samplesRead < numSamples) {
-      // check if both new acceleration and gyroscope data is
-      // available
-      // read the acceleration and gyroscope data
+      // check if the all the required samples have been read since
+      // the last time the significant motion was detected
+      while (samplesRead < numSamples) {
+        // check if both new acceleration and gyroscope data is
+        // available
+        // read the acceleration and gyroscope data
 
-      samplesRead++;
+        samplesRead++;
 
-      // print the data in CSV format
-      Serial.print("Run Number: ");
-      Serial.println(runNumber);
+        // print the data in CSV format
+        Serial.print("Run Number: ");
+        Serial.println(runNumber);
 
-      Serial.println();
-      Serial.println();
-      Serial.println("Accelerometer Values");
-      Serial.print(gyroAccelSensor.readFloatAccelX(), 3);
-      Serial.print(',');
-      Serial.print(gyroAccelSensor.readFloatAccelY(), 3);
-      Serial.print(',');
-      Serial.print(gyroAccelSensor.readFloatAccelZ(), 3);
-      Serial.print(',');
-
-
-      Serial.println();
-      Serial.println();
-      Serial.println("Gryo Values");
-      Serial.print(gyroAccelSensor.readFloatGyroX(), 3);
-      Serial.print(',');
-      Serial.print(gyroAccelSensor.readFloatGyroY(), 3);
-      Serial.print(',');
-      Serial.print(gyroAccelSensor.readFloatGyroZ(), 3);
-      Serial.println();
-      Serial.println();
-
-      runNumber++;
-
-      delay(5000);
-
-      if (samplesRead == numSamples) {
-        // add an empty line if it's the last sample
         Serial.println();
+        Serial.println();
+        Serial.println("Accelerometer Values");
+        Serial.print(gyroAccelSensor.readFloatAccelX(), 3);
+        Serial.print(',');
+        Serial.print(gyroAccelSensor.readFloatAccelY(), 3);
+        Serial.print(',');
+        Serial.print(gyroAccelSensor.readFloatAccelZ(), 3);
+        Serial.print(',');
+
+
+        Serial.println();
+        Serial.println();
+        Serial.println("Gryo Values");
+        Serial.print(gyroAccelSensor.readFloatGyroX(), 3);
+        Serial.print(',');
+        Serial.print(gyroAccelSensor.readFloatGyroY(), 3);
+        Serial.print(',');
+        Serial.print(gyroAccelSensor.readFloatGyroZ(), 3);
+        Serial.println();
+        Serial.println();
+
+        runNumber++;
+
+        delay(100);
+
+        if (samplesRead == numSamples) {
+          // add an empty line if it's the last sample
+          Serial.println();
+        }
       }
     }
-
+    }
   }
 }
