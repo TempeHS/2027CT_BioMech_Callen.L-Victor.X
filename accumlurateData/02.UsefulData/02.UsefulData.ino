@@ -9,8 +9,8 @@ const int numSamples = 119;
 int samplesRead = numSamples;
 
 //Sensors Margin of Change
-const unsigned int accelerationMargin = 0.15;
-const unsigned int gyroscopeMargin = 1;
+const unsigned float accelerationMargin = 0.15;
+const unsigned float gyroscopeMargin = 1;
 //Data is based upon testing of sensors from 01
 
 void setup() {
