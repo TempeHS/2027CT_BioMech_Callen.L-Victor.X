@@ -55,6 +55,24 @@ void loop() {
 
     samplesRead++;
 
+    float originalFloatGyroX;
+    originalFloatGyroX = myIMU.readFloatAccelX(), 3;
+
+    float originalFloatGyroY;
+    originalFloatGyroX = myIMU.readFloatAccelY(), 3;
+
+    float orginalFloatGyroZ;
+    originalFloatGyroX = myIMU.readFloatAccelZ(), 3;
+
+    float originalFloatAccelX;
+    originalFloatAccelX = myIMU.readFloatAccelX(), 3;
+
+    float originalFloatAccelY;
+    originalFloatAccelX = myIMU.readFloatAccelY(), 3;
+
+    float originalFloatAccelZ;
+    originalFloatAccelX = myIMU.readFloatAccelZ(), 3;
+
     // print the data in CSV format
     Serial.print("Run Number: ");
     Serial.println(runNumber);
