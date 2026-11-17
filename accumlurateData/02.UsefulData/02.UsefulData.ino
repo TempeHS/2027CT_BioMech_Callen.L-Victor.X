@@ -25,5 +25,77 @@ void setup() {
 }
 
 void loop() {
+  // wait for significant motion
 
+  unsigned int runNumber = 1;
+
+  while (samplesRead == numSamples) {
+    // read the acceleration data
+    aX = myIMU.readFloatAccelX();
+    aY = myIMU.readFloatAccelY();
+    aZ = myIMU.readFloatAccelZ();
+
+    // sum up the absolutes
+    float aSum = fabs(aX) + fabs(aY) + fabs(aZ);
+
+    // check if it's above the threshold
+    if (aSum >= accelerationThreshold) {
+      // reset the sample read count
+      samplesRead = 0;
+      break;
+    }
+  }
+
+  // check if the all the required samples have been read since
+  // the last time the significant motion was detected
+  while (samplesRead < numSamples) {
+    // check if both new acceleration and gyroscope data is
+    // available
+    // read the acceleration and gyroscope data
+
+    samplesRead++;
+
+    // print the data in CSV format
+    Serial.print("Run Number: ");
+    Serial.println(runNumber);
+
+    Serial.println();
+    Serial.println();
+    Serial.println("Accelerometer Values");
+
+    Serial.print(myIMU.readFloatAccelX(), 3);
+    Serial.print(',');
+
+    Serial.print(myIMU.readFloatAccelY(), 3);
+    Serial.print(',');
+
+    Serial.print(myIMU.readFloatAccelZ(), 3);
+    Serial.print(',');
+
+
+    Serial.println();
+    Serial.println();
+
+    Serial.println("Gryo Values");
+
+    Serial.print(myIMU.readFloatGyroX(), 3);
+    Serial.print(',');
+
+    Serial.print(myIMU.readFloatGyroY(), 3);
+    Serial.print(',');
+
+    Serial.print(myIMU.readFloatGyroZ(), 3);
+    Serial.println();
+    Serial.println();
+
+    runNumber++;
+
+    delay(5000);
+
+    if (samplesRead == numSamples) {
+      // add an empty line if it's the last sample
+      Serial.println();
+    }
+  }
 }
+
