@@ -1,7 +1,8 @@
 # Biomedical Project
 
-> [!IMPORTANT]
-> The project is currently in demo testing stages, and content below are subject to change.
+### Project Progress at the Moment
+
+<img src="./BioMedical_Mechatronics_Task/images/AccDataSteps! v1.png" width="100%" height="100%" alt="Progress Image of Accumulating Data Proj">
 
 ## Overview of Project
 
