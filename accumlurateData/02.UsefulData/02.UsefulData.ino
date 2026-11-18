@@ -2,17 +2,18 @@
 #include <Wire.h>
 #include <math.h>
 
-//Create a instance of class LSM6DS3
-LSM6DS3 myIMU(I2C_MODE, 0x6A);    //I2C device address 0x6A
+// Create a instance of class LSM6DS3
+LSM6DS3 myIMU(I2C_MODE, 0x6A);
+
 float aX, aY, aZ, gX, gY, gZ;
-const float accelerationThreshold = 2.5; // threshold of significant in G's
+
+const float accelerationThreshold = 2.5;
 const int numSamples = 119;
 int samplesRead = numSamples;
 
-//Sensors Margin of Change
+// Sensors Margin of Change
 constexpr float accelerationMargin = 0.15f;
 constexpr float gyroscopeMargin = 0.15f;
-//Data is based upon testing of sensors from 01
 
 void setup() {
   Serial.begin(115200);
