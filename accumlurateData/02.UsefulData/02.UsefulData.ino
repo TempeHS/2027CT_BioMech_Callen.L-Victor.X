@@ -1,5 +1,6 @@
 #include "LSM6DS3.h"
 #include <Wire.h>
+#include <math.h>
 
 //Create a instance of class LSM6DS3
 LSM6DS3 myIMU(I2C_MODE, 0x6A);    //I2C device address 0x6A
@@ -20,6 +21,7 @@ void setup() {
   if (myIMU.begin() != 0) {
     Serial.println("Device error");
   } else {
+    Serial.println("Device Successfully Linked");
     Serial.println("aX,aY,aZ,gX,gY,gZ");
   }
 }
