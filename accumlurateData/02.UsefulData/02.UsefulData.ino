@@ -10,7 +10,7 @@ int samplesRead = numSamples;
 
 //Sensors Margin of Change
 constexpr float accelerationMargin = 0.15f;
-constexpr float accelerationMargin = 0.15f;
+constexpr float gyroscopeMargin = 0.15f;
 //Data is based upon testing of sensors from 01
 
 void setup() {
