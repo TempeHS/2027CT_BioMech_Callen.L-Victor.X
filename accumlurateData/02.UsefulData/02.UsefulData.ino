@@ -7,9 +7,10 @@ LSM6DS3 myIMU(I2C_MODE, 0x6A);
 
 float aX, aY, aZ, gX, gY, gZ;
 
-const float accelerationThreshold = 2.5;
-const int numSamples = 119;
-int samplesRead = numSamples;
+// Accelerometer Min Thresholds
+const float accelerationThreshold = 2.5; // MIN. Combined Acceleration required to trigger recording
+const int numSamples = 119;              // Initialisation of 119 as sample
+int samplesRead = numSamples;            // Sample Read matching numSample above.
 
 // Sensors Margin of Change
 constexpr float accelerationMargin = 0.15f;
@@ -28,26 +29,22 @@ void setup() {
 }
 
 void loop() {
-  // wait for significant motion
 
-  unsigned int runNumber = 1;
-
+  // Accelerometer Min Thresholds: Waits for significant motion
   while (samplesRead == numSamples) {
-    // read the acceleration data
     aX = myIMU.readFloatAccelX();
     aY = myIMU.readFloatAccelY();
     aZ = myIMU.readFloatAccelZ();
 
-    // sum up the absolutes
-    float aSum = fabs(aX) + fabs(aY) + fabs(aZ);
+    float aSum = fabs(aX) + fabs(aY) + fabs(aZ); // Absolute value derived from: aSum = |aX| + |aY| + |aZ|
 
-    // check if it's above the threshold
-    if (aSum >= accelerationThreshold) {
-      // reset the sample read count
+    if (aSum >= accelerationThreshold) { // When aSum >= accelerationThreshold, continues and resets sampleRead (=numSample till)
       samplesRead = 0;
       break;
     }
   }
+
+  unsigned int runNumber = 1;
 
   // check if the all the required samples have been read since
   // the last time the significant motion was detected
