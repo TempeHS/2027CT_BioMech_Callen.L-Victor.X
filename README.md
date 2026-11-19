@@ -4,6 +4,13 @@
 
 <img src="./BioMedical_Mechatronics_Task/images/AccDataSteps! v1.png" width="100%" height="100%" alt="Progress Image of Accumulating Data Proj">
 
+## Task Description
+### Design Situation:
+Biomedical Engineering is the application of engineering principles to developing technologies and solving problems in a diverse range of healthcare-related fields. Biomedical Mechatronics is a branch of Biomedical Engineering specifically focused on engineering solutions using mechatronic components, including sensors, actuators, and feedback systems managed by processing and control systems.
+
+### Design Brief:
+Students will design, document, and prototype a Biomedical device specific to a patient’s biomedical needs and personal requirements.
+
 ## Overview of Project
 
 > [!NOTE]
@@ -18,6 +25,7 @@ Given that Aaron has a trans-radial amputation but still has a healthy elbow joi
 RockyVisionary will help Aaron work towards fulfilling his goal of rock climbing again, while also rebuilding his confidence and independence. By allowing him to regain some of the movement and gripping ability he lost, the device gives him the opportunity to return to an activity that is an important part of his life. RockyVisionary represents the idea that a physical setback does not necessarily have to prevent someone from continuing to pursue the goals that matter to them.
 
 ## Profile of Patient
+1. [Patient Profile Aaron](./BioMedical_Mechatronics_Task/Patient_Profiles/Aaron.md)
 
 ## High Level Pictorial
 
