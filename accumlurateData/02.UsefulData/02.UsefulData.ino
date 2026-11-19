@@ -16,6 +16,9 @@ int samplesRead = numSamples;            // Sample Read matching numSample above
 constexpr float accelerationMargin = 0.15f;
 constexpr float gyroscopeMargin = 0.15f;
 
+// Run no. counter
+unsigned int runNumber = 1;
+
 void setup() {
   Serial.begin(115200);
   while (!Serial);
@@ -44,47 +47,79 @@ void loop() {
     }
   }
 
-  unsigned int runNumber = 1;
-
-  // check if the all the required samples have been read since
-  // the last time the significant motion was detected
+  // Calculates for Significant Changes
   while (samplesRead < numSamples) {
-    // check if both new acceleration and gyroscope data is
-    // available
-    // read the acceleration and gyroscope data
 
-    samplesRead++;
+    // STEP1: Original Sensor Readings Values.
+    aX = myIMU.readFloatAccelX();
+    aY = myIMU.readFloatAccelY();
+    aZ = myIMU.readFloatAccelZ();
 
-    // print the data in CSV format
-    Serial.print("Run Number: ");
+    gX = myIMU.readFloatGyroX();
+    gY = myIMU.readFloatGyroY();
+    gZ = myIMU.readFloatGyroZ();
+
+    samplesRead++; // Update run no. number
+
+    // STEP2: 200ms Delay prior to next readings
+    delay(200);
+
+    // STEP3: Collect next values and filters out things below margin
+    float nextValue;
+
+    nextValue = myIMU.readFloatAccelX(); // Accel X (new value, diff. ab. value., if margin > store, else 0.
+    aX = (fabsf(nextValue - aX) > accelerationMargin)
+         ? nextValue : 0.0f;
+
+    nextValue = myIMU.readFloatAccelY(); // Accel Y
+    aY = (fabsf(nextValue - aY) > accelerationMargin)
+         ? nextValue : 0.0f;
+
+    nextValue = myIMU.readFloatAccelZ(); // Accel Z
+    aZ = (fabsf(nextValue - aZ) > accelerationMargin)
+         ? nextValue : 0.0f;
+
+    nextValue = myIMU.readFloatGyroX(); // Gyro X
+    gX = (fabsf(nextValue - gX) > gyroscopeMargin)
+         ? nextValue : 0.0f;
+
+    nextValue = myIMU.readFloatGyroY(); // Gyro Y
+    gY = (fabsf(nextValue - gY) > gyroscopeMargin)
+         ? nextValue : 0.0f;
+
+    nextValue = myIMU.readFloatGyroZ(); // Gyro Z
+    gZ = (fabsf(nextValue - gZ) > gyroscopeMargin)
+         ? nextValue : 0.0f;
+
+    // STEP4: Print New Pruned Values
+    Serial.print(F("Run Number: "));
     Serial.println(runNumber);
 
     Serial.println();
     Serial.println();
-    Serial.println("Accelerometer Values");
+    Serial.println(F("Accelerometer Values"));
 
-    Serial.print(myIMU.readFloatAccelX(), 3);
+    Serial.print(aX, 3);
     Serial.print(',');
 
-    Serial.print(myIMU.readFloatAccelY(), 3);
+    Serial.print(aY, 3);
     Serial.print(',');
 
-    Serial.print(myIMU.readFloatAccelZ(), 3);
-    Serial.print(',');
-
+    Serial.print(aZ, 3);
 
     Serial.println();
     Serial.println();
 
-    Serial.println("Gryo Values");
+    Serial.println(F("Gyroscope Values"));
 
-    Serial.print(myIMU.readFloatGyroX(), 3);
+    Serial.print(gX, 3);
     Serial.print(',');
 
-    Serial.print(myIMU.readFloatGyroY(), 3);
+    Serial.print(gY, 3);
     Serial.print(',');
 
-    Serial.print(myIMU.readFloatGyroZ(), 3);
+    Serial.print(gZ, 3);
+
     Serial.println();
     Serial.println();
 
@@ -93,8 +128,7 @@ void loop() {
     delay(5000);
 
     if (samplesRead == numSamples) {
-      // add an empty line if it's the last sample
-      Serial.println();
+        Serial.println();
     }
   }
 }
