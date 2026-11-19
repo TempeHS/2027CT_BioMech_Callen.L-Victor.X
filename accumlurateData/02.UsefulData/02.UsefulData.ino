@@ -16,6 +16,9 @@ int samplesRead = numSamples;            // Sample Read matching numSample above
 constexpr float accelerationMargin = 0.15f;
 constexpr float gyroscopeMargin = 0.15f;
 
+// Delay for Next Reading prior to Pruning (in ms)
+unsigned int pruneReadingDiff = 200;
+
 // Run no. counter
 unsigned int runNumber = 1;
 
@@ -61,8 +64,8 @@ void loop() {
 
     samplesRead++; // Update run no. number
 
-    // STEP2: 200ms Delay prior to next readings
-    delay(200);
+    // STEP2: A Short Delay prior to next readings
+    delay(pruneReadingDiff);
 
     // STEP3: Collect next values and filters out things below margin
     float nextValue;
