@@ -20,6 +20,12 @@ constexpr float gyroscopeMargin = 0.15f;
 bool accelMovementX = 0;
 bool gyroMovementX = 0;
 
+bool accelMovementY = 0;
+bool gyroMovementY = 0;
+
+bool accelMovementZ = 0;
+bool gyroMovementZ = 0;
+
 // Delay for Next Reading prior to Pruning (in ms)
 unsigned int pruneReadingDiff = 200;
 
