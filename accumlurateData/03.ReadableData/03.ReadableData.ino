@@ -137,6 +137,15 @@ void loop() {
     if (samplesRead == numSamples) {
         Serial.println();
     }
+
+    // Reset Values of Contents
+    accelMovementX = 0;
+    accelMovementY = 0;
+    accelMovementZ = 0;
+
+    gyroMovementX = 0;
+    gyroMovementY = 0;
+    gyroMovementZ = 0;
   }
 }
 
