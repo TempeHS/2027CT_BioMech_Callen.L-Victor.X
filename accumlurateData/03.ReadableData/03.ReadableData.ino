@@ -146,11 +146,12 @@ void loop() {
 
     // Reset Values of Contents
     accelMovementX = 0;
-    accelMovementY = 0;
-    accelMovementZ = 0;
-
     gyroMovementX = 0;
+
+    accelMovementY = 0;
     gyroMovementY = 0;
+
+    accelMovementZ = 0;
     gyroMovementZ = 0;
   }
 }
