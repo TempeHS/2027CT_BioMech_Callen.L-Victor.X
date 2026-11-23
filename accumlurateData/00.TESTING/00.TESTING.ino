@@ -12,8 +12,8 @@ const float accelerationThreshold = 2.5; // MIN. Combined Acceleration required 
 const int numSamples = 119;              // Initialisation of 119 as sample
 int samplesRead = numSamples;            // Sample Read matching numSample above.
 // Sensors Margin of Change
-constexpr float accelerationMargin = 10;
-constexpr float gyroscopeMargin = 10;
+constexpr float accelerationMargin = 100;
+constexpr float gyroscopeMargin = 100;
 
 // Delay for Next Reading prior to Pruning (in ms)
 unsigned int pruneReadingDiff = 200;
