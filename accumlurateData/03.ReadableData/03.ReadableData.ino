@@ -11,9 +11,14 @@ float aX, aY, aZ, gX, gY, gZ;
 const float accelerationThreshold = 2.5; // MIN. Combined Acceleration required to trigger recording
 const int numSamples = 119;              // Initialisation of 119 as sample
 int samplesRead = numSamples;            // Sample Read matching numSample above.
+
 // Sensors Margin of Change
 constexpr float accelerationMargin = 0.15f;
 constexpr float gyroscopeMargin = 0.15f;
+
+// Key Values
+bool accelMovementX = 0;
+bool gyroMovementX = 0;
 
 // Delay for Next Reading prior to Pruning (in ms)
 unsigned int pruneReadingDiff = 200;
@@ -71,27 +76,27 @@ void loop() {
 
     nextValue = myIMU.readFloatAccelX(); // Accel X (new value, diff. ab. value., if margin > store, else 0.
     aX = (fabsf(nextValue - aX) > accelerationMargin)
-         ? nextValue : 0.0f;
+         ? nextValue : 0.0f; accelMovementX = 1;
 
     nextValue = myIMU.readFloatAccelY(); // Accel Y
     aY = (fabsf(nextValue - aY) > accelerationMargin)
-         ? nextValue : 0.0f;
+         ? nextValue : 0.0f; accelMovementY = 1;
 
     nextValue = myIMU.readFloatAccelZ(); // Accel Z
     aZ = (fabsf(nextValue - aZ) > accelerationMargin)
-         ? nextValue : 0.0f;
+         ? nextValue : 0.0f; accelMovementZ = 1;
 
     nextValue = myIMU.readFloatGyroX(); // Gyro X
     gX = (fabsf(nextValue - gX) > gyroscopeMargin)
-         ? nextValue : 0.0f;
+         ? nextValue : 0.0f; gyroMovementX = 1;
 
     nextValue = myIMU.readFloatGyroY(); // Gyro Y
     gY = (fabsf(nextValue - gY) > gyroscopeMargin)
-         ? nextValue : 0.0f;
+         ? nextValue : 0.0f; gyroMovementY = 1;
 
     nextValue = myIMU.readFloatGyroZ(); // Gyro Z
     gZ = (fabsf(nextValue - gZ) > gyroscopeMargin)
-         ? nextValue : 0.0f;
+         ? nextValue : 0.0f; gyroMovementZ = 1;
 
     // STEP4: Print New Pruned Values
     Serial.print(F("Run Number: "));
