@@ -16,10 +16,6 @@ int samplesRead = numSamples;            // Sample Read matching numSample above
 constexpr float accelerationMargin = 0.15f;
 constexpr float gyroscopeMargin = 0.15f;
 
-// Key Values
-bool accelMovementX = 0;
-bool gyroMovementX = 0;
-
 // Delay for Next Reading prior to Pruning (in ms)
 unsigned int pruneReadingDiff = 200;
 
