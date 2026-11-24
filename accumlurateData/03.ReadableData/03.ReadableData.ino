@@ -80,7 +80,7 @@ void loop() {
     // STEP3: Collect next values and filters out things below margin
     float nextValue;
 
-    nextValue = myIMU.readFloatAccelX(); // Accel X (new value, diff. ab. value., if margin > store, else 0.
+    nextValue = myIMU.readFloatAccelX(); // Accel X (new value, diff. ab. value., if margin > store, else 0.)
     aX = (fabsf(nextValue - aX) > accelerationMargin)
          ? nextValue : 0.0f; accelMovementX = 1;
 
