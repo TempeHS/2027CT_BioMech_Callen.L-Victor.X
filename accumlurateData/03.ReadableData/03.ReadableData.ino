@@ -110,7 +110,7 @@ void loop() {
 
     Serial.println();
     Serial.println();
-    Serial.println(F("Accelerometer Values"));
+    Serial.println(F("Accelerometer Values:"));
 
     Serial.print(aX, 3);
     Serial.print(',');
@@ -123,7 +123,7 @@ void loop() {
     Serial.println();
     Serial.println();
 
-    Serial.println(F("Gyroscope Values"));
+    Serial.println(F("Gyroscope Values:"));
 
     Serial.print(gX, 3);
     Serial.print(',');
