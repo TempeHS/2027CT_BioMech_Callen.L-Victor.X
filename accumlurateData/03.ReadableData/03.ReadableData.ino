@@ -15,7 +15,7 @@ int samplesRead = numSamples;            // Sample Read matching numSample above
 
 // Sensors Margin of Change
 constexpr float accelerationMargin = 0.15f;  // G-Force (≈9.8m/s)
-constexpr float gyroscopeMargin = 0.15f;     // Degrees per second
+constexpr float gyroscopeMargin = 0.15f;     // Degrees per second (try 0.3/0.4f for less sensitivity)
 
 // Key Values
 bool accelMovementX = 0;
@@ -244,6 +244,10 @@ void loop() {
                       ? dAZ : 0.0f;
 
     // STEP 5: Reads Gyro and Further Prunes
+    gX = myIMU.readFloatGyroX() - gyroOffsetX;
+    gY = myIMU.readFloatGyroY() - gyroOffsetY;
+    gZ = myIMU.readFloatGyroZ() - gyroOffsetZ;
+
     float filteredGX = (fabsf(gX) > gyroscopeMargin) // Gyro X (new value, diff. ab. value., if margin > store, else 0.)
                       ? gX : 0.0f;
 
