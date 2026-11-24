@@ -98,6 +98,13 @@ MovementSignature movementSignatures[] = {
          ANY_AXIS, ANY_AXIS, ANY_AXIS}}
 };
 
+// Combine Accel X and Y positions
+int8_t getForwardBackwardDirection(int8_t x, int8_t y) {
+    if (x == 0 && y == 0) return 0;
+    if (abs(x) >= abs(y)) return x;
+    return y;
+}
+
 // Data Merger COmponent
 Movement classifyMovement(const int8_t directions[6]) {
     // Checks if all the axis are stable
@@ -257,6 +264,17 @@ void loop() {
     aX = nextAX;
     aY = nextAY;
     aZ = nextAZ;
+
+    // STEP 8: Create the movement array
+    int8_t directions[6] = {
+      getDirection(dAX, accelerationMargin),
+      getDirection(dAY, accelerationMargin),
+      getDirection(dAZ, accelerationMargin),
+
+      getDirection(gX, gyroscopeMargin),
+      getDirection(gY, gyroscopeMargin),
+      getDirection(gZ, gyroscopeMargin)
+    };
 
     /*
     MAJOR ADJUSTMENTS
