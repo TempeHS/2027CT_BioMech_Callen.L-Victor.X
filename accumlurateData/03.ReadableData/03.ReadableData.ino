@@ -276,6 +276,25 @@ void loop() {
       getDirection(gZ, gyroscopeMargin)
     };
 
+    // STEP 9: Print Values on a Table Design
+    Serial.println("Movement sample:");
+
+    Serial.print("Accel: ");
+    Serial.print(directions[0]);
+    Serial.print(", ");
+    Serial.print(directions[1]);
+    Serial.print(", ");
+    Serial.println(directions[2]);
+
+    Serial.print("Gyro:  ");
+    Serial.print(directions[3]);
+    Serial.print(", ");
+    Serial.print(directions[4]);
+    Serial.print(", ");
+    Serial.println(directions[5]);
+
+    Serial.println();
+
     // Add Samples Read to keep program in sync
     samplesRead++;
 
