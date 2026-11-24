@@ -201,6 +201,8 @@ void loop() {
   // Calculates for Significant Changes
   while (samplesRead < numSamples) {
 
+    /*
+    MAJOR ADJUSTMENTS
     // STEP1: Original Sensor Readings Values.
     aX = myIMU.readFloatAccelX();
     aY = myIMU.readFloatAccelY();
@@ -295,6 +297,7 @@ void loop() {
 
     accelMovementZ = 0;
     gyroMovementZ = 0;
+    */
   }
 }
 
