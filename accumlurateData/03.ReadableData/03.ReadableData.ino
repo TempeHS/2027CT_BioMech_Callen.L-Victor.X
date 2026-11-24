@@ -204,7 +204,7 @@ void loop() {
     aY = myIMU.readFloatAccelY();
     aZ = myIMU.readFloatAccelZ();
 
-    float aSum = fabs(aX) + fabs(aY) + fabs(aZ); // Absolute value derived from: aSum = |aX| + |aY| + |aZ|
+    float aSum = fabsf(aX) + fabsf(aY) + fabsf(aZ); // Absolute value derived from: aSum = |aX| + |aY| + |aZ|
 
     if (aSum >= accelerationThreshold) { // When aSum >= accelerationThreshold, continues and resets sampleRead (=numSample till)
       samplesRead = 0;
