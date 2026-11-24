@@ -50,19 +50,16 @@ unsigned int pruneReadingDiff = 200;
 // Run no. counter
 unsigned int runNumber = 1;
 
-// Sensor Calibration
+// Gyro Sensor Calibration for bias
 void calibrateGyroscope() {
     const int calibrationSamples = 100; // Take 100 Samples
-
     for (int i = 0; i < calibrationSamples; i++) {
-        gyroOffsetX += myIMU.readFloatGyroX();   // Adds 100 of Each Variable
+        gyroOffsetX += myIMU.readFloatGyroX(); // Adds 100 of Each Variable
         gyroOffsetY += myIMU.readFloatGyroY();
         gyroOffsetZ += myIMU.readFloatGyroZ();
-
         delay(5);
     }
-
-    gyroOffsetX /= calibrationSamples;            // Calculates Average of Each
+    gyroOffsetX /= calibrationSamples; // Calculates Average of Each
     gyroOffsetY /= calibrationSamples;
     gyroOffsetZ /= calibrationSamples;
 }
