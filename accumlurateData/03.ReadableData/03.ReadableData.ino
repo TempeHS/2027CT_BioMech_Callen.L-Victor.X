@@ -201,6 +201,55 @@ void loop() {
   // Calculates for Significant Changes
   while (samplesRead < numSamples) {
 
+    // STEP 0: Initialise the local variables needed in this program
+    float nextValue = 0;
+
+    // STEP 1: Begin Data Pruning
+    delay(pruneReadingDiff);
+
+    // STEP 2: Collect the new accelerometer values
+    float nextAX = myIMU.readFloatAccelX();
+    float nextAY = myIMU.readFloatAccelY();
+    float nextAZ = myIMU.readFloatAccelZ();
+
+    // STEP 3: Calculates the accelerometer change in data
+    float dAX = nextAX - aX;
+    float dAY = nextAY - aY;
+    float dAZ = nextAZ - aZ;
+
+    // STEP 4: Calculates the gyroscope with the Offset calibration from previously
+    gX = myIMU.readFloatGyroX() - gyroOffsetX;
+    gY = myIMU.readFloatGyroY() - gyroOffsetY;
+    gZ = myIMU.readFloatGyroZ() - gyroOffsetZ;
+
+    // STEP 5: Accelerometer Thresholds and Further Prune
+    aX = (fabsf(dAX) > accelerationMargin) // Accel X (new value, diff. ab. value., if margin > store, else 0.)
+     ? dAX : 0.0f;
+
+    aY = (fabsf(dAY) > accelerationMargin)
+        ? dAY : 0.0f;
+
+    aZ = (fabsf(dAZ) > accelerationMargin)
+        ? dAZ : 0.0f;
+
+    // STEP 6: Reads Gyro
+    nextValue = myIMU.readFloatGyroX(); // Accel X (new value, diff. ab. value., if margin > store, else 0.)
+    gX = (fabsf(nextValue - gX) > gyroscopeMargin)
+        ? nextValue : 0.0f;
+
+    nextValue = myIMU.readFloatGyroY();
+    gY = (fabsf(nextValue - gY) > gyroscopeMargin)
+        ? nextValue : 0.0f;
+
+    nextValue = myIMU.readFloatGyroZ();
+    gZ = (fabsf(nextValue - gZ) > gyroscopeMargin)
+        ? nextValue : 0.0f;
+
+    // STEP 7: Make Stored Accelerometer Data the new reference
+    aX = nextAX;
+    aY = nextAY;
+    aZ = nextAZ;
+
     /*
     MAJOR ADJUSTMENTS
     // STEP1: Original Sensor Readings Values.
