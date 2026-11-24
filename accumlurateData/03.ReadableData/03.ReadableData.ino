@@ -28,7 +28,7 @@ bool accelMovementZ = 0;
 bool gyroMovementZ = 0;
 
 // Delay for Next Reading prior to Pruning (in ms)
-unsigned int pruneReadingDiff = 200;
+constexpr unsigned int pruneReadingDiff = 200;
 
 // Run no. counter
 unsigned int runNumber = 1;
