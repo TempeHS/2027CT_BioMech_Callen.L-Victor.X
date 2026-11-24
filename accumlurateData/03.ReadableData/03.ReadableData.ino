@@ -227,18 +227,15 @@ void loop() {
     float filteredAZ = (fabsf(dAZ) > accelerationMargin)
                       ? dAZ : 0.0f;
 
-    // STEP 5: Reads Gyro
-    nextValue = myIMU.readFloatGyroX(); // Accel X (new value, diff. ab. value., if margin > store, else 0.)
-    gX = (fabsf(nextValue - gX) > gyroscopeMargin)
-        ? nextValue : 0.0f;
+    // STEP 5: Reads Gyro and Further Prunes
+    float filteredGX = (fabsf(gX) > gyroscopeMargin) // Gyro X (new value, diff. ab. value., if margin > store, else 0.)
+                      ? gX : 0.0f;
 
-    nextValue = myIMU.readFloatGyroY();
-    gY = (fabsf(nextValue - gY) > gyroscopeMargin)
-        ? nextValue : 0.0f;
+    float filteredGY = (fabsf(gY) > gyroscopeMargin)
+                      ? gY : 0.0f;
 
-    nextValue = myIMU.readFloatGyroZ();
-    gZ = (fabsf(nextValue - gZ) > gyroscopeMargin)
-        ? nextValue : 0.0f;
+    float filteredGZ = (fabsf(gZ) > gyroscopeMargin)
+                      ? gZ : 0.0f;
 
     // STEP 6: Make Stored Accelerometer Data the new reference
     aX = nextAX;
