@@ -237,7 +237,16 @@ void loop() {
     float filteredGZ = (fabsf(gZ) > gyroscopeMargin)
                       ? gZ : 0.0f;
 
-    // STEP 6: Make Stored Accelerometer Data the new reference
+    // STEP 6: Create the movement flags for Accel Movements
+    accelMovementX = filteredAX != 0.0f; // Make filteredAX TRUE if its anything but 0
+    accelMovementY = filteredAY != 0.0f;
+    accelMovementZ = filteredAZ != 0.0f;
+
+    gyroMovementX = filteredGX != 0.0f;
+    gyroMovementY = filteredGY != 0.0f;
+    gyroMovementZ = filteredGZ != 0.0f;
+
+    // STEP 7: Make Stored Accelerometer Data the new reference
     aX = nextAX;
     aY = nextAY;
     aZ = nextAZ;
