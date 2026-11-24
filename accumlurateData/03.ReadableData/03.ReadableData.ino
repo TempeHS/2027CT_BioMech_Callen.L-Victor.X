@@ -26,6 +26,19 @@ bool gyroMovementY = 0;
 bool accelMovementZ = 0;
 bool gyroMovementZ = 0;
 
+// Data Merger Component for Types of Movements
+enum Movement {
+    STATIONARY,
+    FORWARD_LEFT_UP,
+    FORWARD_LEFT_STRAIGHT,
+    FORWARD_DOWN_STRAIGHT,
+    BACK_DOWN_DOWN,
+    MOVING,
+    UNKNOWN,
+};
+
+Movement currentMovement = UNKNOWN;
+
 // Delay for Next Reading prior to Pruning (in ms)
 unsigned int pruneReadingDiff = 200;
 
@@ -137,6 +150,9 @@ void loop() {
     Serial.println();
 
     runNumber++;
+
+    // STEP 5: Merges different data into a single one.
+
 
     delay(5000);
 
