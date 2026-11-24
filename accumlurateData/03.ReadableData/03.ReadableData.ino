@@ -1,6 +1,7 @@
 #include "LSM6DS3.h"
 #include <Wire.h>
 #include <math.h>
+#include <stdint.h>
 
 // Create a instance of class LSM6DS3
 LSM6DS3 myIMU(I2C_MODE, 0x6A);
@@ -26,6 +27,11 @@ bool gyroMovementY = 0;
 bool accelMovementZ = 0;
 bool gyroMovementZ = 0;
 
+// Gyroscope Baseline FOR calibration
+float gyroOffsetX = 0.0f;
+float gyroOffsetY = 0.0f;
+float gyroOffsetZ = 0.0f;
+
 // Data Merger Component for Types of Movements
 enum Movement {
     STATIONARY,
@@ -43,6 +49,23 @@ unsigned int pruneReadingDiff = 200;
 
 // Run no. counter
 unsigned int runNumber = 1;
+
+// Sensor Calibration
+void calibrateGyroscope() {
+    const int calibrationSamples = 100; // Take 100 Samples
+
+    for (int i = 0; i < calibrationSamples; i++) {
+        gyroOffsetX += myIMU.readFloatGyroX();   // Adds 100 of Each Variable
+        gyroOffsetY += myIMU.readFloatGyroY();
+        gyroOffsetZ += myIMU.readFloatGyroZ();
+
+        delay(5);
+    }
+
+    gyroOffsetX /= calibrationSamples;            // Calculates Average of Each
+    gyroOffsetY /= calibrationSamples;
+    gyroOffsetZ /= calibrationSamples;
+}
 
 void setup() {
   Serial.begin(115200);
