@@ -33,7 +33,6 @@ enum Movement {
     FORWARD_LEFT_STRAIGHT,
     FORWARD_DOWN_STRAIGHT,
     BACK_DOWN_DOWN,
-    MOVING,
     UNKNOWN,
 };
 
