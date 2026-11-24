@@ -82,13 +82,20 @@ struct MovementSignature {
 // Temporary Movement Signatures for Each Component
 MovementSignature movementSignatures[] = {
     {FORWARD_LEFT_UP, false,
-        {0, 0, 0, 0, 0, 0}},
+        {ANY_AXIS, ANY_AXIS, ANY_AXIS,
+         ANY_AXIS, ANY_AXIS, ANY_AXIS}},
+
     {FORWARD_LEFT_STRAIGHT, false,
-        {0, 0, 0, 0, 0, 0}},
+        {ANY_AXIS, ANY_AXIS, ANY_AXIS,
+         ANY_AXIS, ANY_AXIS, ANY_AXIS}},
+
     {FORWARD_DOWN_STRAIGHT, false,
-        {0, 0, 0, 0, 0, 0}},
+        {ANY_AXIS, ANY_AXIS, ANY_AXIS,
+         ANY_AXIS, ANY_AXIS, ANY_AXIS}},
+
     {BACK_DOWN_DOWN, false,
-        {0, 0, 0, 0, 0, 0}}
+        {ANY_AXIS, ANY_AXIS, ANY_AXIS,
+         ANY_AXIS, ANY_AXIS, ANY_AXIS}}
 };
 
 // Data Merger COmponent
