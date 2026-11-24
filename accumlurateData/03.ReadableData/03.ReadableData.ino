@@ -156,7 +156,28 @@ void setup() {
   if (myIMU.begin() != 0) {
     Serial.println("Device error");
   } else {
+    // Successful Connection
     Serial.println("Device Successfully Linked");
+    delay(2000);
+
+    Serial.println("Stay Stationary, Gyroscope Calibration is Starting Soon...");
+    delay(2000);
+
+    Serial.println("3");
+    delay(1000);
+
+    Serial.println("2");
+    delay(1000);
+
+    Serial.println("1");
+    delay(1000);
+
+    // Calibrating Gyroscope
+    calibrateGyroscope();
+
+    Serial.println("Finished Gyroscope Calibration!");
+    delay(1000);
+
     Serial.println("aX,aY,aZ,gX,gY,gZ");
   }
 }
