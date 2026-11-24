@@ -13,8 +13,8 @@ const int numSamples = 119;              // Initialisation of 119 as sample
 int samplesRead = numSamples;            // Sample Read matching numSample above.
 
 // Sensors Margin of Change
-constexpr float accelerationMargin = 0.15f;
-constexpr float gyroscopeMargin = 0.15f;
+constexpr float accelerationMargin = 0.15f;  // G-Force (≈9.8m/s)
+constexpr float gyroscopeMargin = 0.15f;     // Degrees per second
 
 // Key Values
 bool accelMovementX = 0;
