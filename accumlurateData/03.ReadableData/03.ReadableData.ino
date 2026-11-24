@@ -73,7 +73,7 @@ int8_t getDirection(float value, float threshold) { // Use of int8_t (8 bit) ove
 
 // Translates 6 raw sensor data into a single movement
 constexpr int8_t ANY_AXIS = 2;
-struct MovementSig {
+struct MovementSignature {
     Movement movement;
     bool enabled;
     int8_t axes[6];
