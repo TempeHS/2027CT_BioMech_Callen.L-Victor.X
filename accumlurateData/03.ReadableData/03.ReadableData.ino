@@ -27,16 +27,16 @@ bool gyroMovementY = 0;
 bool accelMovementZ = 0;
 bool gyroMovementZ = 0;
 
-// Gyroscope Baseline FOR calibration
-float gyroOffsetX = 0.0f;
-float gyroOffsetY = 0.0f;
-float gyroOffsetZ = 0.0f;
-
 // Delay for Next Reading prior to Pruning (in ms)
 unsigned int pruneReadingDiff = 200;
 
 // Run no. counter
 unsigned int runNumber = 1;
+
+// Gyroscope Baseline FOR calibration
+float gyroOffsetX = 0.0f;
+float gyroOffsetY = 0.0f;
+float gyroOffsetZ = 0.0f;
 
 // Gyro Sensor Calibration for bias
 void calibrateGyroscope() {
