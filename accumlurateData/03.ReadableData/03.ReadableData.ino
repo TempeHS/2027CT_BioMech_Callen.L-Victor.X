@@ -71,6 +71,14 @@ int8_t getDirection(float value, float threshold) { // Use of int8_t (8 bit) ove
     return 0; // Otherwise return 0
 }
 
+// Translates 6 raw sensor data into a single movement
+constexpr int8_t ANY_AXIS = 2;
+struct MovementSig {
+    Movement movement;
+    bool enabled;
+    int8_t axes[6];
+};
+
 void setup() {
   Serial.begin(115200);
   while (!Serial);
