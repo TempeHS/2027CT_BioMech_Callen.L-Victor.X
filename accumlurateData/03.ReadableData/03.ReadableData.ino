@@ -215,8 +215,10 @@ void loop() {
   // Calculates for Significant Changes
   while (samplesRead < numSamples) {
 
-    // STEP 0: Initialise the local variables needed in this program
-    float nextValue = 0;
+    // STEP 0: Print Run Number AND bars for readability
+    Serial.println("==================================");
+    Serial.print("Run Number: ");
+    Serial.println(runNumber);
 
     // STEP 1: Begin Data Pruning
     delay(pruneReadingDiff);
@@ -297,104 +299,8 @@ void loop() {
 
     // Add Samples Read to keep program in sync
     samplesRead++;
-
-    /*
-    MAJOR ADJUSTMENTS
-    // STEP1: Original Sensor Readings Values.
-    aX = myIMU.readFloatAccelX();
-    aY = myIMU.readFloatAccelY();
-    aZ = myIMU.readFloatAccelZ();
-
-    gX = myIMU.readFloatGyroX();
-    gY = myIMU.readFloatGyroY();
-    gZ = myIMU.readFloatGyroZ();
-
-    samplesRead++; // Update run no. number
-
-    // STEP2: A Short Delay prior to next readings
-    delay(pruneReadingDiff);
-
-    // STEP3: Collect next values and filters out things below margin
-    float nextValue;
-
-    nextValue = myIMU.readFloatAccelX(); // Accel X (new value, diff. ab. value., if margin > store, else 0.)
-    aX = (fabsf(nextValue - aX) > accelerationMargin)
-         ? nextValue : 0.0f; accelMovementX = 1;
-
-    nextValue = myIMU.readFloatAccelY(); // Accel Y
-    aY = (fabsf(nextValue - aY) > accelerationMargin)
-         ? nextValue : 0.0f; accelMovementY = 1;
-
-    nextValue = myIMU.readFloatAccelZ(); // Accel Z
-    aZ = (fabsf(nextValue - aZ) > accelerationMargin)
-         ? nextValue : 0.0f; accelMovementZ = 1;
-
-    nextValue = myIMU.readFloatGyroX(); // Gyro X
-    gX = (fabsf(nextValue - gX) > gyroscopeMargin)
-         ? nextValue : 0.0f; gyroMovementX = 1;
-
-    nextValue = myIMU.readFloatGyroY(); // Gyro Y
-    gY = (fabsf(nextValue - gY) > gyroscopeMargin)
-         ? nextValue : 0.0f; gyroMovementY = 1;
-
-    nextValue = myIMU.readFloatGyroZ(); // Gyro Z
-    gZ = (fabsf(nextValue - gZ) > gyroscopeMargin)
-         ? nextValue : 0.0f; gyroMovementZ = 1;
-
-    // STEP4: Print New Pruned Values
-    Serial.print(F("Run Number: "));
-    Serial.println(runNumber);
-
-    Serial.println();
-    Serial.println();
-    Serial.println(F("Accelerometer Values:"));
-
-    Serial.print(aX, 3);
-    Serial.print(',');
-
-    Serial.print(aY, 3);
-    Serial.print(',');
-
-    Serial.print(aZ, 3);
-
-    Serial.println();
-    Serial.println();
-
-    Serial.println(F("Gyroscope Values:"));
-
-    Serial.print(gX, 3);
-    Serial.print(',');
-
-    Serial.print(gY, 3);
-    Serial.print(',');
-
-    Serial.print(gZ, 3);
-
-    Serial.println();
-    Serial.println();
-
-    runNumber++;
-
-    // STEP 5: Merges different data into a single one.
-
-
-    delay(5000);
-
-    if (samplesRead == numSamples) {
-        Serial.println();
-    }
-
-    // MARK: Potentially Removable Component of Program
-    // Reset Values of Contents
-    accelMovementX = 0;
-    gyroMovementX = 0;
-
-    accelMovementY = 0;
-    gyroMovementY = 0;
-
-    accelMovementZ = 0;
-    gyroMovementZ = 0;
-    */
+    runNumber++; // Counter :D
+    Serial.println("==================================");
   }
 }
 
