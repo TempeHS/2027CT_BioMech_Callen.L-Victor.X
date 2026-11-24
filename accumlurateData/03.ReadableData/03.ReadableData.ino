@@ -144,6 +144,7 @@ void loop() {
         Serial.println();
     }
 
+    // MARK: Potentially Removable Component of Program
     // Reset Values of Contents
     accelMovementX = 0;
     gyroMovementX = 0;
