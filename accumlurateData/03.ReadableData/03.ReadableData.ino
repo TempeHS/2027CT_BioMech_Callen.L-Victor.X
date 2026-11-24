@@ -79,6 +79,76 @@ struct MovementSignature {
     int8_t axes[6];
 };
 
+// Temporary Movement Signatures for Each Component
+MovementSignature movementSignatures[] = {
+    {FORWARD_LEFT_UP, false,
+        {0, 0, 0, 0, 0, 0}},
+    {FORWARD_LEFT_STRAIGHT, false,
+        {0, 0, 0, 0, 0, 0}},
+    {FORWARD_DOWN_STRAIGHT, false,
+        {0, 0, 0, 0, 0, 0}},
+    {BACK_DOWN_DOWN, false,
+        {0, 0, 0, 0, 0, 0}}
+};
+
+// Data Merger COmponent
+Movement classifyMovement(const int8_t directions[6]) {
+    // Checks if all the axis are stable
+    bool stationary = true;
+    for (int i = 0; i < 6; i++) {
+        if (directions[i] != 0) {
+            stationary = false;
+            break;
+        }
+    }
+    if (stationary) {
+        return STATIONARY;
+    }
+
+    // Compare against the existing movement signatures
+    for (const MovementSignature& signature : movementSignatures) {
+        if (!signature.enabled) {
+            continue;
+        }
+        bool match = true;
+        for (int i = 0; i < 6; i++) {
+            if (
+                signature.axes[i] != ANY_AXIS &&
+                signature.axes[i] != directions[i]
+            ) {
+                match = false;
+                break;
+            }
+        }
+        if (match) {
+            return signature.movement;
+        }
+    }
+    // IF none match, return UNKNOWN.
+    return UNKNOWN;
+}
+// Auto Determine a Array's Element Count at Compile Time
+constexpr int movementSignatureCount =
+    sizeof(movementSignatures) / sizeof(movementSignatures[0]);
+
+// Just here to display movement :)
+const char* movementName(Movement movement) {
+    switch (movement) {
+        case STATIONARY:
+            return "STATIONARY";
+        case FORWARD_LEFT_UP:
+            return "FORWARD_LEFT_UP";
+        case FORWARD_LEFT_STRAIGHT:
+            return "FORWARD_LEFT_STRAIGHT";
+        case FORWARD_DOWN_STRAIGHT:
+            return "FORWARD_DOWN_STRAIGHT";
+        case BACK_DOWN_DOWN:
+            return "BACK_DOWN_DOWN";
+        default:
+            return "UNKNOWN";
+    }
+}
+
 void setup() {
   Serial.begin(115200);
   while (!Serial);
