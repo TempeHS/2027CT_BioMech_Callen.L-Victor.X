@@ -276,6 +276,9 @@ void loop() {
       getDirection(gZ, gyroscopeMargin)
     };
 
+    // Add Samples Read to keep program in sync
+    samplesRead++;
+
     /*
     MAJOR ADJUSTMENTS
     // STEP1: Original Sensor Readings Values.
