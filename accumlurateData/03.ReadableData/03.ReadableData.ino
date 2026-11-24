@@ -32,18 +32,6 @@ float gyroOffsetX = 0.0f;
 float gyroOffsetY = 0.0f;
 float gyroOffsetZ = 0.0f;
 
-// Data Merger Component for Types of Movements
-enum Movement {
-    STATIONARY,
-    FORWARD_LEFT_UP,
-    FORWARD_LEFT_STRAIGHT,
-    FORWARD_DOWN_STRAIGHT,
-    BACK_DOWN_DOWN,
-    UNKNOWN,
-};
-
-Movement currentMovement = UNKNOWN;
-
 // Delay for Next Reading prior to Pruning (in ms)
 unsigned int pruneReadingDiff = 200;
 
@@ -63,6 +51,18 @@ void calibrateGyroscope() {
     gyroOffsetY /= calibrationSamples;
     gyroOffsetZ /= calibrationSamples;
 }
+
+// Data Merger Component for Types of Movements
+enum Movement {
+    STATIONARY,
+    FORWARD_LEFT_UP,
+    FORWARD_LEFT_STRAIGHT,
+    FORWARD_DOWN_STRAIGHT,
+    BACK_DOWN_DOWN,
+    UNKNOWN,
+};
+
+Movement currentMovement = UNKNOWN;
 
 void setup() {
   Serial.begin(115200);
