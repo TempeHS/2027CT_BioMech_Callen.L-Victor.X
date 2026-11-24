@@ -64,6 +64,13 @@ enum Movement {
 
 Movement currentMovement = UNKNOWN;
 
+// Set up getDirection var making the data merger simpler
+int8_t getDirection(float value, float threshold) { // Use of int8_t (8 bit) over int (min. 16 bit) to save memory
+    if (value > threshold)  return 1; // When value greater than threshold, set to one
+    if (value < -threshold) return -1; // When value lower then threshold, set to negative one
+    return 0; // Otherwise return 0
+}
+
 void setup() {
   Serial.begin(115200);
   while (!Serial);
