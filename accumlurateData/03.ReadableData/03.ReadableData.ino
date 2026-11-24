@@ -217,11 +217,6 @@ void loop() {
     float dAY = nextAY - aY;
     float dAZ = nextAZ - aZ;
 
-    // STEP 4: Calculates the gyroscope with the Offset calibration from previously
-    gX = myIMU.readFloatGyroX() - gyroOffsetX;
-    gY = myIMU.readFloatGyroY() - gyroOffsetY;
-    gZ = myIMU.readFloatGyroZ() - gyroOffsetZ;
-
     // STEP 5: Accelerometer Thresholds and Further Prune
     aX = (fabsf(dAX) > accelerationMargin) // Accel X (new value, diff. ab. value., if margin > store, else 0.)
      ? dAX : 0.0f;
