@@ -3,7 +3,8 @@
 #include <math.h>
 #include <stdint.h>
 
-// Intialize Sensors
+// ================= MARK: Program Initialization =================
+// Initialize Sensors
 LSM6DS3 myIMU(I2C_MODE, 0x6A);
 bool imuReady = false;
 
@@ -16,6 +17,185 @@ float gX = 0.0f;
 float gY = 0.0f;
 float gZ = 0.0f;
 
+// Prev Accel Values
+float previousAccel[3] = {
+    0.0f, 0.0f, 0.0f
+};
+
+// ================= MARK: Sensor THRESHOLDS =================
+// Accelerometer delta threshold for valid reading (G) - Aka measurable change in 9.8m/s
+constexpr float accelerationMargin = 0.15f;
+
+// Gyroscope change in degrees for valid reading (DPS)
+constexpr float gyroscopeMargin = 0.5f;
+
+// Stable readings till classified
+constexpr uint8_t positionWindowSamples = 3;
+
+// Maximum distance in G-force from Accelerometer
+constexpr float maxPositionDistance = 0.20f;
+
+// Minimum change in G-force from Accelerometer
+constexpr float minPositionSeparation = 0.05f;
+
+// 2 Decimal Place Rounder
+constexpr float roundingFactor = 100.0f;
+
+// ================= MARK: Runtime Variables =================
+// Run Counter
+uint32_t runNumber = 1;
+
+// Changes in Gyroscope in Degrees
+float gyroOffsetX = 0.0f;
+float gyroOffsetY = 0.0f;
+float gyroOffsetZ = 0.0f;
+
+// Accel and Gyro Total Sum
+float accelSum[3] = {
+    0.0f, 0.0f, 0.0f
+};
+
+float gyroSum[3] = {
+    0.0f, 0.0f, 0.0f
+};
+
+// Consecutive Stable Readings Counter Variable
+uint8_t settledSampleCount = 0;
+
+// Distances Classifications
+float nearestPositionDistance = -1.0f;
+float secondPositionDistance = -1.0f;
+
+// Gyroscope Calibration
+constexpr uint16_t calibrationSamples = 100;
+constexpr unsigned long calibrationDelay = 5UL;
+
+// ================= MARK: Movement Definitions =================
+enum Movement : uint8_t {
+    FORWARD_LEFT_UP,
+    FORWARD_LEFT_STRAIGHT,
+    FORWARD_DOWN_STRAIGHT,
+    BACK_DOWN_DOWN,
+    UNKNOWN
+};
+
+Movement currentMovement = UNKNOWN;
+
+// ================= MARK: Movement Signatures =================
+
+struct MovementSignature {
+    Movement movement;
+    bool enabled;
+    float accel[3];
+};
+
+MovementSignature movementSignatures[] = {
+    // Forward + Left + Up
+    {FORWARD_LEFT_UP, false,
+        {0.00f, 0.00f, 0.00f}},
+
+    // Forward + Left + Straight
+    {FORWARD_LEFT_STRAIGHT, false,
+        {0.00f, 0.00f, 0.00f}},
+
+    // Forward + Down + Straight
+    {FORWARD_DOWN_STRAIGHT, false,
+        {0.00f, 0.00f, 0.00f}},
+
+    // Backward + Down + Down
+    {BACK_DOWN_DOWN, false,
+        {0.00f, 0.00f, 0.00f}}
+};
+
+// Counter for amount of signatures that matches
+constexpr uint8_t movementSignatureCount =
+    sizeof(movementSignatures) / sizeof(movementSignatures[0]);
+
+// ================= MARK: Utility Purpose Functions =================
+// Round to 2dp using float to float over doubles
+float roundTo2dp(float value) {
+    return roundf(value * roundingFactor) / roundingFactor;
+}
+
+// Calculate the magnitude using Euclidean distance 3-Dimensional
+float vectorMagnitude(const float values[3]) {
+    return sqrtf(
+        (values[0] * values[0]) +
+        (values[1] * values[1]) +
+        (values[2] * values[2])
+    );
+}
+
+// Abstract Values from Sensors
+int8_t getDirection(float value, float threshold) {
+    if (value > threshold) {
+        return 1;
+    }
+    if (value < -threshold) {
+        return -1;
+    }
+    return 0;
+}
+
+// Movement Serial Print
+const char* movementName(Movement movement) {
+    switch (movement) {
+        case FORWARD_LEFT_UP:
+            return "FORWARD_LEFT_UP";
+        case FORWARD_LEFT_STRAIGHT:
+            return "FORWARD_LEFT_STRAIGHT";
+        case FORWARD_DOWN_STRAIGHT:
+            return "FORWARD_DOWN_STRAIGHT";
+        case BACK_DOWN_DOWN:
+            return "BACK_DOWN_DOWN";
+        default:
+            return "UNKNOWN";
+    }
+}
+
+// Reset Accumulator Variables
+void resetPositionWindow() {
+    for (uint8_t i = 0; i < 3; i++) {
+        accelSum[i] = 0.0f;
+        gyroSum[i] = 0.0f;
+    }
+    settledSampleCount = 0;
+}
+
+// ================= MARK: Gyroscope Calibration =================
+void calibrateGyroscope() {
+
+    // Reset Values
+    gyroOffsetX = 0.0f;
+    gyroOffsetY = 0.0f;
+    gyroOffsetZ = 0.0f;
+
+    Serial.println();
+    Serial.println("Starting gyroscope calibration...");
+
+    for (uint16_t i = 0; i < calibrationSamples; i++) {
+
+        gyroOffsetX += myIMU.readFloatGyroX();
+        gyroOffsetY += myIMU.readFloatGyroY();
+        gyroOffsetZ += myIMU.readFloatGyroZ();
+
+        delay(calibrationDelay);
+    }
+
+    // Average to find sensor bias
+    gyroOffsetX /= calibrationSamples;
+    gyroOffsetY /= calibrationSamples;
+    gyroOffsetZ /= calibrationSamples;
+
+    Serial.println("Gyroscope calibration complete.");
+    Serial.print("Offset X: ");
+    Serial.println(gyroOffsetX, 4);
+    Serial.print("Offset Y: ");
+    Serial.println(gyroOffsetY, 4);
+    Serial.print("Offset Z: ");
+    Serial.println(gyroOffsetZ, 4);
+    Serial.println();
+}
 
 void setup() {
   Serial.begin(115200);
