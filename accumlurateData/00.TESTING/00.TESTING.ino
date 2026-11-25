@@ -86,13 +86,6 @@ MovementSignature movementSignatures[] = {
          ANY_AXIS, ANY_AXIS, ANY_AXIS}}
 };
 
-// Combine Accel X and Y positions
-int8_t getForwardBackwardDirection(int8_t x, int8_t y) {
-    if (x == 0 && y == 0) return 0;
-    if (abs(x) >= abs(y)) return x;
-    return y;
-}
-
 // Auto Determine a Array's Element Count at Compile Time
 constexpr int movementSignatureCount =
     sizeof(movementSignatures) / sizeof(movementSignatures[0]);
