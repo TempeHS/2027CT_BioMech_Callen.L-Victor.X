@@ -32,7 +32,7 @@ bool gyroMovementZ = 0;
 constexpr unsigned int pruneReadingDiff = 5000;
 
 // Run no. counter
-unsigned int runNumber = 1;
+uint32_t runNumber = 1;
 
 // Gyroscope Baseline FOR calibration
 float gyroOffsetX = 0.0f;
