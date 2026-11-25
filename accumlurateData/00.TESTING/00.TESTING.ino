@@ -3,167 +3,19 @@
 #include <math.h>
 #include <stdint.h>
 
-// MARK: Existing Variables
-// Create a instance of class LSM6DS3
+// Intialize Sensors
 LSM6DS3 myIMU(I2C_MODE, 0x6A);
+bool imuReady = false;
 
-float aX, aY, aZ, gX, gY, gZ;
+// Active Sensor Values
+float aX = 0.0f;
+float aY = 0.0f;
+float aZ = 0.0f;
 
-// Accelerometer Min Thresholds
-const float accelerationThreshold = 2.5f; // MIN. Combined Acceleration required to trigger recording
-const int numSamples = 119;              // Initialisation of 119 as sample
-uint16_t samplesRead = numSamples;            // Sample Read matching numSample above.
+float gX = 0.0f;
+float gY = 0.0f;
+float gZ = 0.0f;
 
-// Sensors Margin of Change
-constexpr float accelerationMargin = 0.15f;  // G-Force (≈9.8m/s)
-constexpr float gyroscopeMargin = 0.5f;     // Degrees per second (try 0.3/0.4f for less sensitivity)
-
-// Delay for Next Reading prior to Pruning (in ms)
-constexpr unsigned int pruneReadingDiff = 5000;
-
-// Run no. counter
-uint32_t runNumber = 1;
-
-// Gyroscope Baseline FOR calibration
-float gyroOffsetX = 0.0f;
-float gyroOffsetY = 0.0f;
-float gyroOffsetZ = 0.0f;
-
-// Gyro Sensor Calibration for bias
-void calibrateGyroscope() {
-    const int calibrationSamples = 100; // Take 100 Samples
-    for (int i = 0; i < calibrationSamples; i++) {
-        gyroOffsetX += myIMU.readFloatGyroX(); // Adds 100 of Each Variable
-        gyroOffsetY += myIMU.readFloatGyroY();
-        gyroOffsetZ += myIMU.readFloatGyroZ();
-        delay(5);
-    }
-    gyroOffsetX /= calibrationSamples; // Calculates Average of Each
-    gyroOffsetY /= calibrationSamples;
-    gyroOffsetZ /= calibrationSamples;
-}
-
-// Data Merger Component for Types of Movements
-enum Movement {
-    STATIONARY,
-    FORWARD_LEFT_UP,
-    FORWARD_LEFT_STRAIGHT,
-    FORWARD_DOWN_STRAIGHT,
-    BACK_DOWN_DOWN,
-    UNKNOWN,
-};
-
-Movement currentMovement = UNKNOWN;
-
-// Set up getDirection var making the data merger simpler
-int8_t getDirection(float value, float threshold) { // Use of int8_t (8 bit) over int (min. 16 bit) to save memory
-    if (value > threshold)  return 1; // When value greater than threshold, set to one
-    if (value < -threshold) return -1; // When value lower then threshold, set to negative one
-    return 0; // Otherwise return 0
-}
-
-// Temporary Movement Signatures for Each Component
-MovementSignature movementSignatures[] = {
-
-    // Forward + Left + Up
-    {FORWARD_LEFT_UP, false,
-        {ANY_AXIS, ANY_AXIS, ANY_AXIS,
-         ANY_AXIS, ANY_AXIS, ANY_AXIS}},
-
-    // Forward + Left + Straight
-    {FORWARD_LEFT_STRAIGHT, false,
-        {ANY_AXIS, ANY_AXIS, ANY_AXIS,
-         ANY_AXIS, ANY_AXIS, ANY_AXIS}},
-
-    // Forward + Down + Straight
-    {FORWARD_DOWN_STRAIGHT, false,
-        {ANY_AXIS, ANY_AXIS, ANY_AXIS,
-         ANY_AXIS, ANY_AXIS, ANY_AXIS}},
-
-    // Backward + Down + Down
-    {BACK_DOWN_DOWN, false,
-        {ANY_AXIS, ANY_AXIS, ANY_AXIS,
-         ANY_AXIS, ANY_AXIS, ANY_AXIS}}
-};
-
-// Auto Determine a Array's Element Count at Compile Time
-constexpr int movementSignatureCount =
-    sizeof(movementSignatures) / sizeof(movementSignatures[0]);
-
-// Data Merger COmponent
-Movement classifyMovement(const int8_t directions[6]) {
-    // Checks if all the axis are stable
-    bool stationary = true;
-    for (int i = 0; i < 6; i++) {
-        if (directions[i] != 0) {
-            stationary = false;
-            break;
-        }
-    }
-    if (stationary) {
-        return STATIONARY;
-    }
-
-    // Compare against the existing movement signatures
-    for (const MovementSignature& signature : movementSignatures) {
-        if (!signature.enabled) {
-            continue;
-        }
-        bool match = true;
-        for (int i = 0; i < 6; i++) {
-            if (
-                signature.axes[i] != ANY_AXIS &&
-                signature.axes[i] != directions[i]
-            ) {
-                match = false;
-                break;
-            }
-        }
-        if (match) {
-            return signature.movement;
-        }
-    }
-    // IF none match, return UNKNOWN.
-    return UNKNOWN;
-}
-
-// Just here to display movement :)
-const char* movementName(Movement movement) {
-    switch (movement) {
-        case STATIONARY:
-            return "STATIONARY";
-        case FORWARD_LEFT_UP:
-            return "FORWARD_LEFT_UP";
-        case FORWARD_LEFT_STRAIGHT:
-            return "FORWARD_LEFT_STRAIGHT";
-        case FORWARD_DOWN_STRAIGHT:
-            return "FORWARD_DOWN_STRAIGHT";
-        case BACK_DOWN_DOWN:
-            return "BACK_DOWN_DOWN";
-        default:
-            return "UNKNOWN";
-    }
-}
-
-// MARK: Brand New Experimental Variables
-// NEW EXPERIMENTAL Static Position Classification Settings
-
-// Amount of stable readings prior to classification
-constexpr uint8_t positionWindowSamples = 3;
-
-// Max accelerometer change on accelerometer between readings on G-Force
-constexpr float positionAccelChangeLimit = 0.05f;
-
-// Euclidean distance settings (G) - d=sqrt((x₂-x₁)²+(y₂-y₁)²+(z₂-z₁)²) for Shortest Straight Line Distance
-constexpr float maxPositionDistance = 0.20f;
-constexpr float minPositionSeparation = 0.05f;
-
-// Rounding of two decimal points.
-constexpr float roundingFactor = 100.0f;
-
-float roundTo2dp(float value) { // Floating Point Helper.
-    return roundf(value * roundingFactor) / roundingFactor;
-}
 
 void setup() {
   Serial.begin(115200);
