@@ -54,6 +54,6 @@ _High Level Pictorial of RockyVisionary R1:_
 
 > [!TIP]
 > The order we are using in this section to make it readable is listed below in the format of:
-> [Location][Name] (Libraries)
+> [Location] [Name] (Libraries)
 
 - I2C 6-axis Grove Accelerometer and Gyroscope (LSM6DS3 and Wire)
