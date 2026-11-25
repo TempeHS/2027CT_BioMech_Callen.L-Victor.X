@@ -212,21 +212,6 @@ void setup() {
 }
 
 void loop() {
-
-  // Accelerometer Min Thresholds: Waits for significant motion
-  while (samplesRead == numSamples) {
-    aX = myIMU.readFloatAccelX();
-    aY = myIMU.readFloatAccelY();
-    aZ = myIMU.readFloatAccelZ();
-
-    float aSum = fabsf(aX) + fabsf(aY) + fabsf(aZ); // Absolute value derived from: aSum = |aX| + |aY| + |aZ|
-
-    if (aSum >= accelerationThreshold) { // When aSum >= accelerationThreshold, continues and resets sampleRead (=numSample till)
-      samplesRead = 0;
-      break;
-    }
-  }
-
   // Calculates for Significant Changes
   while (samplesRead < numSamples) {
 
