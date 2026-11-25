@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdint.h>
 
+// MARK: Existing Variables
 // Create a instance of class LSM6DS3
 LSM6DS3 myIMU(I2C_MODE, 0x6A);
 
@@ -167,6 +168,26 @@ const char* movementName(Movement movement) {
         default:
             return "UNKNOWN";
     }
+}
+
+// MARK: Brand New Experimental Variables
+// NEW EXPERIMENTAL Static Position Classification Settings
+
+// Amount of stable readings prior to classification
+constexpr uint8_t positionWindowSamples = 3;
+
+// Max accelerometer change on accelerometer between readings on G-Force
+constexpr float positionAccelChangeLimit = 0.05f;
+
+// Euclidean distance settings (G) - d=sqrt((x₂-x₁)²+(y₂-y₁)²+(z₂-z₁)²) for Shortest Straight Line Distance
+constexpr float maxPositionDistance = 0.20f;
+constexpr float minPositionSeparation = 0.05f;
+
+// Rounding of two decimal points.
+constexpr float roundingFactor = 100.0f;
+
+float roundTo2dp(float value) { // Floating Point Helper.
+    return roundf(value * roundingFactor) / roundingFactor;
 }
 
 void setup() {
