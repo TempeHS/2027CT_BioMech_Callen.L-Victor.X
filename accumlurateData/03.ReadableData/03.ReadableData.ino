@@ -15,7 +15,7 @@ int samplesRead = numSamples;            // Sample Read matching numSample above
 
 // Sensors Margin of Change
 constexpr float accelerationMargin = 0.15f;  // G-Force (≈9.8m/s)
-constexpr float gyroscopeMargin = 0.15f;     // Degrees per second (try 0.3/0.4f for less sensitivity)
+constexpr float gyroscopeMargin = 0.5f;     // Degrees per second (try 0.3/0.4f for less sensitivity)
 
 // Key Values
 bool accelMovementX = 0;
@@ -28,7 +28,7 @@ bool accelMovementZ = 0;
 bool gyroMovementZ = 0;
 
 // Delay for Next Reading prior to Pruning (in ms)
-constexpr unsigned int pruneReadingDiff = 200;
+constexpr unsigned int pruneReadingDiff = 5000;
 
 // Run no. counter
 unsigned int runNumber = 1;
