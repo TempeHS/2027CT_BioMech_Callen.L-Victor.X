@@ -13,8 +13,8 @@ Students will design, document, and prototype a Biomedical device specific to a 
 
 ## Overview of Project
 
-> [!NOTE]
-> Content from Statement of Intent in Biomedical Project Folio.
+> [!TIP]
+> The content below is from the Statement of Intent during project :)
 
 RockyVisionary is a biomedical mechanical arm that allows the user to control a prosthetic hand that follows the movement of the elbow. It uses a microcontroller, gyroscope, accelerometer, and motors to detect movement and translate it into controlled actions of the hand. Together, these components aim to create a comfortable and lightweight mechanical arm that responds naturally to the user’s movements.
 
