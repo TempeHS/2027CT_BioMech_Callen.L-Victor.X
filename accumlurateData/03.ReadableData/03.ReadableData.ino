@@ -104,7 +104,7 @@ int8_t getForwardBackwardDirection(int8_t x, int8_t y) {
     if (abs(x) >= abs(y)) return x;
     return y;
 }
-/*
+
 // Auto Determine a Array's Element Count at Compile Time
 constexpr int movementSignatureCount =
     sizeof(movementSignatures) / sizeof(movementSignatures[0]);
@@ -163,7 +163,6 @@ const char* movementName(Movement movement) {
             return "UNKNOWN";
     }
 }
-*/
 
 void setup() {
   Serial.begin(115200);
