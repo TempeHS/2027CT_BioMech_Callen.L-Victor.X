@@ -81,18 +81,23 @@ struct MovementSignature {
 
 // Temporary Movement Signatures for Each Component
 MovementSignature movementSignatures[] = {
+
+    // Forward + Left + Up
     {FORWARD_LEFT_UP, false,
         {ANY_AXIS, ANY_AXIS, ANY_AXIS,
          ANY_AXIS, ANY_AXIS, ANY_AXIS}},
 
+    // Forward + Left + Straight
     {FORWARD_LEFT_STRAIGHT, false,
         {ANY_AXIS, ANY_AXIS, ANY_AXIS,
          ANY_AXIS, ANY_AXIS, ANY_AXIS}},
 
+    // Forward + Down + Straight
     {FORWARD_DOWN_STRAIGHT, false,
         {ANY_AXIS, ANY_AXIS, ANY_AXIS,
          ANY_AXIS, ANY_AXIS, ANY_AXIS}},
 
+    // Backward + Down + Down
     {BACK_DOWN_DOWN, false,
         {ANY_AXIS, ANY_AXIS, ANY_AXIS,
          ANY_AXIS, ANY_AXIS, ANY_AXIS}}
