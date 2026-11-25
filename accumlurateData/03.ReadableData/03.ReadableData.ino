@@ -105,6 +105,10 @@ int8_t getForwardBackwardDirection(int8_t x, int8_t y) {
     return y;
 }
 /*
+// Auto Determine a Array's Element Count at Compile Time
+constexpr int movementSignatureCount =
+    sizeof(movementSignatures) / sizeof(movementSignatures[0]);
+
 // Data Merger COmponent
 Movement classifyMovement(const int8_t directions[6]) {
     // Checks if all the axis are stable
@@ -141,9 +145,6 @@ Movement classifyMovement(const int8_t directions[6]) {
     // IF none match, return UNKNOWN.
     return UNKNOWN;
 }
-// Auto Determine a Array's Element Count at Compile Time
-constexpr int movementSignatureCount =
-    sizeof(movementSignatures) / sizeof(movementSignatures[0]);
 
 // Just here to display movement :)
 const char* movementName(Movement movement) {
