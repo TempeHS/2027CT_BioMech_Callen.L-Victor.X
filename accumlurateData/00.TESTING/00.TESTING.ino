@@ -10,9 +10,9 @@ LSM6DS3 myIMU(I2C_MODE, 0x6A);
 float aX, aY, aZ, gX, gY, gZ;
 
 // Accelerometer Min Thresholds
-const float accelerationThreshold = 2.5; // MIN. Combined Acceleration required to trigger recording
+const float accelerationThreshold = 2.5f; // MIN. Combined Acceleration required to trigger recording
 const int numSamples = 119;              // Initialisation of 119 as sample
-int samplesRead = numSamples;            // Sample Read matching numSample above.
+uint16_t samplesRead = numSamples;            // Sample Read matching numSample above.
 
 // Sensors Margin of Change
 constexpr float accelerationMargin = 0.15f;  // G-Force (≈9.8m/s)
