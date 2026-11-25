@@ -104,7 +104,7 @@ int8_t getForwardBackwardDirection(int8_t x, int8_t y) {
     if (abs(x) >= abs(y)) return x;
     return y;
 }
-
+/*
 // Data Merger COmponent
 Movement classifyMovement(const int8_t directions[6]) {
     // Checks if all the axis are stable
@@ -162,6 +162,7 @@ const char* movementName(Movement movement) {
             return "UNKNOWN";
     }
 }
+*/
 
 void setup() {
   Serial.begin(115200);
