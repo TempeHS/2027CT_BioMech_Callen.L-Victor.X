@@ -18,18 +18,8 @@ uint16_t samplesRead = numSamples;            // Sample Read matching numSample 
 constexpr float accelerationMargin = 0.15f;  // G-Force (≈9.8m/s)
 constexpr float gyroscopeMargin = 0.5f;     // Degrees per second (try 0.3/0.4f for less sensitivity)
 
-// Key Values
-bool accelMovementX = 0;
-bool gyroMovementX = 0;
-
-bool accelMovementY = 0;
-bool gyroMovementY = 0;
-
-bool accelMovementZ = 0;
-bool gyroMovementZ = 0;
-
 // Delay for Next Reading prior to Pruning (in ms)
-constexpr unsigned long pruneReadingDiff = 5000UL;
+constexpr unsigned int pruneReadingDiff = 5000;
 
 // Run no. counter
 uint32_t runNumber = 1;
@@ -71,14 +61,6 @@ int8_t getDirection(float value, float threshold) { // Use of int8_t (8 bit) ove
     if (value < -threshold) return -1; // When value lower then threshold, set to negative one
     return 0; // Otherwise return 0
 }
-
-// Translates 6 raw sensor data into a single movement
-constexpr int8_t ANY_AXIS = 2;
-struct MovementSignature {
-    Movement movement;
-    bool enabled;
-    int8_t axes[6];
-};
 
 // Temporary Movement Signatures for Each Component
 MovementSignature movementSignatures[] = {
