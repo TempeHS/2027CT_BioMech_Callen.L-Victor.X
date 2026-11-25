@@ -192,6 +192,15 @@ void setup() {
 
     Serial.println("Finished Gyroscope Calibration!");
     delay(1000);
+      
+    Serial.print("Gyro Offset X: ");
+    Serial.println(gyroOffsetX, 4);
+    Serial.print("Gyro Offset Y: ");
+    Serial.println(gyroOffsetY, 4);
+    Serial.print("Gyro Offset Z: ");
+    Serial.println(gyroOffsetZ, 4);
+
+    delay(2500);
 
     Serial.println("aX,aY,aZ,gX,gY,gZ");
   }
