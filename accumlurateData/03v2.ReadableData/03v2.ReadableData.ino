@@ -58,9 +58,13 @@ void setup() {
 
     agXYZ();
 
+    Serial.println();
+    Serial.println("========== Initial Status of Sensors ==========");
+
     delay(1000);
 
-    Serial.println("Accelerometer:");
+    Serial.println();
+    Serial.println("-> Accelerometer:");
     Serial.println("The format used is: aX, aY, aZ");
 
     Serial.print(aX, 3);
@@ -71,7 +75,8 @@ void setup() {
 
     delay(1000);
 
-    Serial.println("Gyroscope:");
+    Serial.println();
+    Serial.println("-> Gyroscope: ");
     Serial.println("The format used is: gX, gY, gZ");
 
     Serial.print(gX, 3);
@@ -80,7 +85,6 @@ void setup() {
     Serial.print(",");
     Serial.println(gZ, 3);
 
-    Serial.println("Initial Status of Sensors:");
 }
 
 void loop() {
