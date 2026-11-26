@@ -43,6 +43,8 @@ void agOriginalXYZ() {
 }
 
 void initialRunning() {
+    delay(1000);
+
     Serial.println("Accelerometer:");
     Serial.println("The format used is: aX, aY, aZ");
 
@@ -52,7 +54,7 @@ void initialRunning() {
     Serial.print(",");
     Serial.println(aZ, 3);
 
-    delay(500);
+    delay(1000);
 
     Serial.println("Gyroscope:");
     Serial.println("The format used is: gX, gY, gZ");
