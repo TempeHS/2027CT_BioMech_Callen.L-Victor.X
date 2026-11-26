@@ -115,6 +115,7 @@ void loop() {
     if (sensorReadyStatus == false) {
         return;
     }
-    float varDiff
+    
+    float varDiff;
     diffVar(aXoriginal, aX);
 }
