@@ -116,5 +116,7 @@ void loop() {
         return;
     }
 
-    diffVar(aXoriginal, aX);
+    float diff = 0;
+
+    diff = diffVar(aXoriginal, aX);
 }
