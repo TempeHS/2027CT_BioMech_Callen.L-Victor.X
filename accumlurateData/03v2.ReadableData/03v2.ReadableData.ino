@@ -5,6 +5,7 @@
 
 LSM6DS3 myIMU(I2C_MODE, 0x6A); // Prepare Sensor
 
+// ========== Current Status of Sensors ==========
 float aX = 0.000;
 float aY = 0.000;
 float aZ = 0.000;
@@ -23,6 +24,7 @@ void agXYZ() {
     gZ = myIMU.readFloatGyroZ();
 }
 
+// ========== Original Status of Sensors ==========
 float aXoriginal = 0.000;
 float aYoriginal = 0.000;
 float aZoriginal = 0.000;
@@ -42,10 +44,12 @@ void agOriginalXYZ() {
     gZoriginal = gZ;
 }
 
+// ========== Sensor Ready Status of Sensors ==========
 bool sensorReadyStatus = false;
 
 void setup() {
     Serial.begin(115200);
+
     if (myIMU.begin() != 0) {
         Serial.println("Sensor Intialisation Failed.");
         return;
@@ -91,5 +95,4 @@ void loop() {
     if (sensorReadyStatus == false) {
         return;
     }
-
 }
