@@ -5,6 +5,7 @@
 
 LSM6DS3 myIMU(I2C_MODE, 0x6A);
 
+// MARK: Startup Variables
 // ========== Current Status of Sensors ==========
 float aX = 0.000;
 float aY = 0.000;
@@ -44,6 +45,19 @@ void agOriginalXYZ() {
     gZoriginal = gZ;
 }
 
+// ========== Difference Status of Sensors ==========
+float diffVar(int variable1, int variable2) {
+    return variable1 - variable2;
+}
+
+float aXdifference = diffVar(int aXoriginal, int aX);
+float aYdifference = 0.000;
+float aZdifference = 0.000;
+
+float gXdifference = 0.000;
+float gYdifference = 0.000;
+float gZdifference = 0.000;
+
 // ========== Sensor Ready Status of Sensors ==========
 bool sensorReadyStatus = false;
 
@@ -71,11 +85,11 @@ void setup() {
     Serial.println("-> Accelerometer:");
     Serial.println("The format used is: aX, aY, aZ");
 
-    Serial.print(aX, 3);
+    Serial.print(aX, 2);
     Serial.print(",");
-    Serial.print(aY, 3);
+    Serial.print(aY, 2);
     Serial.print(",");
-    Serial.println(aZ, 3);
+    Serial.println(aZ, 2);
 
     delay(1000);
 
@@ -83,11 +97,11 @@ void setup() {
     Serial.println("-> Gyroscope: ");
     Serial.println("The format used is: gX, gY, gZ");
 
-    Serial.print(gX, 3);
+    Serial.print(gX, 2);
     Serial.print(",");
-    Serial.print(gY, 3);
+    Serial.print(gY, 2);
     Serial.print(",");
-    Serial.println(gZ, 3);
+    Serial.println(gZ, 2);
 
     delay(1000);
 
@@ -101,4 +115,6 @@ void loop() {
     if (sensorReadyStatus == false) {
         return;
     }
+    float varDiff
+    diffVar(aXoriginal, aX);
 }
