@@ -3,7 +3,9 @@
 #include <math.h>
 #include <stdint.h>
 
-LSM6DS3 myIMU(I2C_MODE, 0x6A); // Prepare Sensor
+#include "initalisationProcess.h"
+
+LSM6DS3 myIMU(I2C_MODE, 0x6A);
 
 float aX = 0.000;
 float aY = 0.000;
@@ -40,30 +42,6 @@ void agOriginalXYZ() {
     gXoriginal = gX;
     gYoriginal = gY;
     gZoriginal = gZ;
-}
-
-void initialRunning() {
-    delay(1000);
-
-    Serial.println("Accelerometer:");
-    Serial.println("The format used is: aX, aY, aZ");
-
-    Serial.print(aX, 3);
-    Serial.print(",");
-    Serial.print(aY, 3);
-    Serial.print(",");
-    Serial.println(aZ, 3);
-
-    delay(1000);
-
-    Serial.println("Gyroscope:");
-    Serial.println("The format used is: gX, gY, gZ");
-
-    Serial.print(gX, 3);
-    Serial.print(",");
-    Serial.print(gY, 3);
-    Serial.print(",");
-    Serial.println(gZ, 3);
 }
 
 bool sensorReadyStatus = false;
