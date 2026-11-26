@@ -3,7 +3,12 @@
 #include <math.h>
 #include <stdint.h>
 
+// ================================== MARK: VARIABLE INITIALISATION ==================================
+
 // ================= MARK: Program Initialization =================
+// Debugging Speed
+constexpr unsigned long pruneReadingDiff = 1000UL;
+
 // Initialize Sensors
 LSM6DS3 myIMU(I2C_MODE, 0x6A);
 bool imuReady = false;
@@ -24,22 +29,25 @@ float previousAccel[3] = {
 
 // ================= MARK: Sensor THRESHOLDS =================
 // Accelerometer delta threshold for valid reading (G) - Aka measurable change in 9.8m/s
-constexpr float accelerationMargin = 0.15f;
+constexpr float accelerationMargin = 0.35f;
 
 // Gyroscope change in degrees for valid reading (DPS)
-constexpr float gyroscopeMargin = 0.5f;
+constexpr float gyroscopeMargin = 2.0f;
 
 // Stable readings till classified
 constexpr uint8_t positionWindowSamples = 3;
 
 // Maximum distance in G-force from Accelerometer
-constexpr float maxPositionDistance = 0.20f;
+constexpr float maxPositionDistance = 1.0f;
 
-// Minimum change in G-force from Accelerometer
-constexpr float minPositionSeparation = 0.05f;
+// Minimum distance difference between the closest two signatures (G)
+constexpr float minPositionSeparation = 0.02f;
 
 // 2 Decimal Place Rounder
 constexpr float roundingFactor = 100.0f;
+
+// Limit on Accel Vector Change in Samples
+constexpr float positionAccelChangeLimit = 0.4f;
 
 // ================= MARK: Runtime Variables =================
 // Run Counter
@@ -92,31 +100,26 @@ struct MovementSignature {
 MovementSignature movementSignatures[] = {
     // Forward + Left + Up
     {FORWARD_LEFT_UP, false,
-        {0.00f, 0.00f, 0.00f}},
+        {0.05f, 0.05f, 0.10f}},
 
     // Forward + Left + Straight
     {FORWARD_LEFT_STRAIGHT, false,
-        {0.00f, 0.00f, 0.00f}},
+        {0.05f, -0.05f, 0.10f}},
 
     // Forward + Down + Straight
     {FORWARD_DOWN_STRAIGHT, false,
-        {0.00f, 0.00f, 0.00f}},
+        {0.05f, 0.05f, 0.10f}},
 
     // Backward + Down + Down
     {BACK_DOWN_DOWN, false,
-        {0.00f, 0.00f, 0.00f}}
+        {-0.05f, -0.05f, -0.05f}}
 };
 
 // Counter for amount of signatures that matches
 constexpr uint8_t movementSignatureCount =
     sizeof(movementSignatures) / sizeof(movementSignatures[0]);
 
-// ================= MARK: Utility Purpose Functions =================
-// Round to 2dp using float to float over doubles
-float roundTo2dp(float value) {
-    return roundf(value * roundingFactor) / roundingFactor;
-}
-
+// ================= MARK: Hand Stable =================
 // Calculate the magnitude using Euclidean distance 3-Dimensional
 float vectorMagnitude(const float values[3]) {
     return sqrtf(
@@ -124,6 +127,32 @@ float vectorMagnitude(const float values[3]) {
         (values[1] * values[1]) +
         (values[2] * values[2])
     );
+}
+
+bool isHandSettled(
+    const float deltaAccel[3],
+    const float gyro[3],
+    float& accelChangeMagnitude,
+    float& gyroMagnitude
+) {
+    // Calculate total accelerometer change
+    accelChangeMagnitude = vectorMagnitude(deltaAccel);
+
+    // Calculate total angular velocity
+    gyroMagnitude = vectorMagnitude(gyro);
+
+    // Are Both Satisfied
+    bool accelerationStable =
+        accelChangeMagnitude <= positionAccelChangeLimit;
+    bool gyroscopeStable =
+        gyroMagnitude <= gyroscopeMargin;
+    return accelerationStable && gyroscopeStable;
+}
+
+// ================= MARK: Utility Purpose Functions =================
+// Round to 2dp using float to float over doubles
+float roundTo2dp(float value) {
+    return roundf(value * roundingFactor) / roundingFactor;
 }
 
 // Abstract Values from Sensors
@@ -174,11 +203,9 @@ void calibrateGyroscope() {
     Serial.println("Starting gyroscope calibration...");
 
     for (uint16_t i = 0; i < calibrationSamples; i++) {
-
         gyroOffsetX += myIMU.readFloatGyroX();
         gyroOffsetY += myIMU.readFloatGyroY();
         gyroOffsetZ += myIMU.readFloatGyroZ();
-
         delay(calibrationDelay);
     }
 
@@ -197,35 +224,136 @@ void calibrateGyroscope() {
     Serial.println();
 }
 
+// ================= MARK: UPDATED Classification =================
+Movement classifyMovement(
+    const float accel[3], // For absolute
+    const float gyro[3], // For Bias
+    float& bestDistanceOut, // Closest Sig
+    float& secondDistanceOut // Second Closest Sig
+) {
+    // Start Output Distances
+    bestDistanceOut = -1.0f; // Show unstable because Euclidean can't be negative
+    secondDistanceOut = -1.0f;
+
+    // STEP 1: Did Arm Stop?
+    float gyroMagnitude = vectorMagnitude(gyro); // Wait til arm stopped using G=(G^2x + G^2y + G^2z) (looks for stability)
+    if (gyroMagnitude > gyroscopeMargin) {
+        return UNKNOWN;
+    }
+
+    // STEP 2: Start nearest-match variables
+    float bestDistance = 0.0f;
+    float secondBestDistance = 0.0f;
+    Movement bestMovement = UNKNOWN;
+    bool foundBest = false;
+    bool foundSecondBest = false;
+
+    // STEP 3: See which signatures are enabled
+    for (uint8_t i = 0; i < movementSignatureCount; i++) {
+        const MovementSignature& signature =
+            movementSignatures[i];
+
+        if (!signature.enabled) {
+            continue;
+        }
+
+        // STEP 4: Calculate Euclidean distance
+        float dx = accel[0] - signature.accel[0];
+        float dy = accel[1] - signature.accel[1];
+        float dz = accel[2] - signature.accel[2];
+
+        float distance = sqrtf(
+            (dx * dx) +
+            (dy * dy) +
+            (dz * dz)
+        );
+
+        // STEP 5: Find closest and 2nd closest.
+        if (!foundBest || distance < bestDistance) {
+            if (foundBest) {
+                secondBestDistance = bestDistance;
+                foundSecondBest = true;
+            }
+            bestDistance = distance;
+            bestMovement = signature.movement;
+            foundBest = true;
+        }
+        else if (
+            !foundSecondBest ||
+            distance < secondBestDistance
+        ) {
+            secondBestDistance = distance;
+            foundSecondBest = true;
+        }
+    }
+
+    // STEP 6: Any signatures available?
+    if (!foundBest) {
+        return UNKNOWN;
+    }
+
+    // Store distances for Serial
+    bestDistanceOut = bestDistance;
+    if (foundSecondBest) {
+        secondDistanceOut = secondBestDistance;
+    }
+
+    // STEP 7: Reject too much distant matches
+    if (bestDistance > maxPositionDistance) {
+        return UNKNOWN;
+    }
+
+    // STEP 8: Reject ambiguous matches
+    if (
+        foundSecondBest &&
+        (secondBestDistance - bestDistance) < minPositionSeparation
+    ) {
+        return UNKNOWN;
+    }
+
+    // STEP 9: Provide Final Classification
+    return bestMovement;
+}
+
+// ================================== MARK: PROGRAM SETUP INITIALISATION ==================================
 void setup() {
   Serial.begin(115200);
   while (!Serial);
-
   if (myIMU.begin() != 0) {
     Serial.println("Device error");
+    imuReady = false;
+      return;
   } else {
-    // Successful Connection
-    Serial.println("Device Successfully Linked");
+    imuReady = true;
+    Serial.println("Device Successfully Linked.");
     delay(2000);
 
-    Serial.println("Stay Stationary, Gyroscope Calibration is Starting Soon...");
+    // Gyroscope Calibration for Bias
+    Serial.println();
+    Serial.println("Keep the hand stationary.");
+    Serial.println("Gyroscope calibration starting soon...");
     delay(2000);
-
     Serial.println("3");
     delay(1000);
-
     Serial.println("2");
     delay(1000);
-
     Serial.println("1");
     delay(1000);
 
-    // Calibrating Gyroscope
+    // Begin gyroscope calibration
     calibrateGyroscope();
+    delay(500);
 
-    Serial.println("Finished Gyroscope Calibration!");
-    delay(1000);
+    // Initialise Sensor Orientation
+    previousAccel[0] = myIMU.readFloatAccelX();
+    previousAccel[1] = myIMU.readFloatAccelY();
+    previousAccel[2] = myIMU.readFloatAccelZ();
 
+    // Success Message
+    Serial.println("Gyroscope Calibration Completed!");
+    delay(2000);
+
+    // Current Values from Gyro
     Serial.print("Gyro Offset X: ");
     Serial.println(gyroOffsetX, 4);
     Serial.print("Gyro Offset Y: ");
@@ -234,105 +362,262 @@ void setup() {
     Serial.println(gyroOffsetZ, 4);
 
     delay(2500);
-
-    Serial.println("aX,aY,aZ,gX,gY,gZ");
   }
 }
 
 void loop() {
-  // Calculates for Significant Changes
-  while (samplesRead < numSamples) {
-
-    // STEP 0: Print Run Number AND bars for readability
-    Serial.println("==================================");
-    Serial.print("Run Number: ");
-    Serial.println(runNumber);
-
-    // STEP 1: Begin Data Pruning
-    delay(pruneReadingDiff);
-
-    // STEP 2: Collect the new accelerometer values
-    float nextAX = myIMU.readFloatAccelX();
-    float nextAY = myIMU.readFloatAccelY();
-    float nextAZ = myIMU.readFloatAccelZ();
-
-    // STEP 3: Calculates the accelerometer change in data
-    float dAX = nextAX - aX;
-    float dAY = nextAY - aY;
-    float dAZ = nextAZ - aZ;
-
-    // STEP 4: Accelerometer Thresholds and Further Prune
-    float filteredAX = (fabsf(dAX) > accelerationMargin) // Accel X (new value, diff. ab. value., if margin > store, else 0.)
-                   ? dAX : 0.0f;
-
-    float filteredAY = (fabsf(dAY) > accelerationMargin)
-                      ? dAY : 0.0f;
-
-    float filteredAZ = (fabsf(dAZ) > accelerationMargin)
-                      ? dAZ : 0.0f;
-
-    // STEP 5: Reads Gyro and Further Prunes
-    gX = myIMU.readFloatGyroX() - gyroOffsetX;
-    gY = myIMU.readFloatGyroY() - gyroOffsetY;
-    gZ = myIMU.readFloatGyroZ() - gyroOffsetZ;
-
-    float filteredGX = (fabsf(gX) > gyroscopeMargin) // Gyro X (new value, diff. ab. value., if margin > store, else 0.)
-                      ? gX : 0.0f;
-
-    float filteredGY = (fabsf(gY) > gyroscopeMargin)
-                      ? gY : 0.0f;
-
-    float filteredGZ = (fabsf(gZ) > gyroscopeMargin)
-                      ? gZ : 0.0f;
-
-    // STEP 6: Create the movement flags for Accel Movements
-    accelMovementX = filteredAX != 0.0f; // Make filteredAX TRUE if its anything but 0
-    accelMovementY = filteredAY != 0.0f;
-    accelMovementZ = filteredAZ != 0.0f;
-
-    gyroMovementX = filteredGX != 0.0f;
-    gyroMovementY = filteredGY != 0.0f;
-    gyroMovementZ = filteredGZ != 0.0f;
-
-    // STEP 7: Make Stored Accelerometer Data the new reference
-    aX = nextAX;
-    aY = nextAY;
-    aZ = nextAZ;
-
-    // STEP 8: Create the movement array
-    int8_t directions[6] = {
-      getDirection(dAX, accelerationMargin),
-      getDirection(dAY, accelerationMargin),
-      getDirection(dAZ, accelerationMargin),
-
-      getDirection(gX, gyroscopeMargin),
-      getDirection(gY, gyroscopeMargin),
-      getDirection(gZ, gyroscopeMargin)
-    };
-
-    // STEP 9: Print Values on a Table Design
-    Serial.println("Movement sample:");
-
-    Serial.print("Accel: ");
-    Serial.print(directions[0]);
-    Serial.print(", ");
-    Serial.print(directions[1]);
-    Serial.print(", ");
-    Serial.println(directions[2]);
-
-    Serial.print("Gyro:  ");
-    Serial.print(directions[3]);
-    Serial.print(", ");
-    Serial.print(directions[4]);
-    Serial.print(", ");
-    Serial.println(directions[5]);
-
-    Serial.println();
-
-    // Add Samples Read to keep program in sync
-    samplesRead++;
-    runNumber++; // Counter :D
-    Serial.println("==================================");
+  // See if Sensor Access Working
+  if (!imuReady) {
+      delay(1000);
+      return;
   }
+
+  // Wait for sensor reading
+  delay(pruneReadingDiff);
+
+  // Read absolute
+  float currentAccel[3] = {
+
+      myIMU.readFloatAccelX(),
+      myIMU.readFloatAccelY(),
+      myIMU.readFloatAccelZ()
+  };
+
+  // Read and correct gyro values
+  float currentGyro[3] = {
+
+      myIMU.readFloatGyroX() - gyroOffsetX,
+      myIMU.readFloatGyroY() - gyroOffsetY,
+      myIMU.readFloatGyroZ() - gyroOffsetZ
+  };
+
+  // Update global sensor readings
+  aX = currentAccel[0];
+  aY = currentAccel[1];
+  aZ = currentAccel[2];
+
+  gX = currentGyro[0];
+  gY = currentGyro[1];
+  gZ = currentGyro[2];
+
+  // Accel Changes
+  float deltaAccel[3] = {
+
+      currentAccel[0] - previousAccel[0],
+      currentAccel[1] - previousAccel[1],
+      currentAccel[2] - previousAccel[2]
+  };
+
+  // Update accelerometer readings
+  for (uint8_t i = 0; i < 3; i++) {
+      previousAccel[i] = currentAccel[i];
+  }
+
+  // Arm settled
+  float accelChangeMagnitude = 0.0f;
+  float gyroMagnitude = 0.0f;
+
+  bool handSettled = isHandSettled(
+      deltaAccel,
+      currentGyro,
+      accelChangeMagnitude,
+      gyroMagnitude
+  );
+
+  // Smaller readings for comparison
+  int8_t directions[6] = {
+      getDirection(deltaAccel[0], accelerationMargin),
+      getDirection(deltaAccel[1], accelerationMargin),
+      getDirection(deltaAccel[2], accelerationMargin),
+
+      getDirection(currentGyro[0], gyroscopeMargin),
+      getDirection(currentGyro[1], gyroscopeMargin),
+      getDirection(currentGyro[2], gyroscopeMargin)
+  };
+
+  // Use stable sensor readings
+  bool classificationUpdated = false;
+  float averagedAccel[3] = {
+      0.0f, 0.0f, 0.0f
+  };
+  float averagedGyro[3] = {
+      0.0f, 0.0f, 0.0f
+  };
+
+  if (!handSettled) {
+      // What movement happened
+      currentMovement = UNKNOWN;
+      nearestPositionDistance = -1.0f;
+      secondPositionDistance = -1.0f;
+
+      // Discard previous stable readings
+      resetPositionWindow();
+  }
+  else {
+      // Add the stable readings
+      for (uint8_t i = 0; i < 3; i++) {
+          accelSum[i] += currentAccel[i];
+          gyroSum[i] += currentGyro[i];
+      }
+      settledSampleCount++;
+
+
+      // Enough Stable Readings?
+      if (settledSampleCount >= positionWindowSamples) {
+          // Calculate average readings
+          for (uint8_t i = 0; i < 3; i++) {
+              averagedAccel[i] = roundTo2dp(
+                  accelSum[i] / positionWindowSamples
+              );
+              averagedGyro[i] =
+                  gyroSum[i] / positionWindowSamples;
+          }
+
+          // Variable for the averaged static orientation
+          currentMovement = classifyMovement(
+              averagedAccel,
+              averagedGyro,
+              nearestPositionDistance,
+              secondPositionDistance
+          );
+          classificationUpdated = true;
+
+          // Reset for the next classification
+          resetPositionWindow();
+      }
+  }
+
+  // PRINT OUTPUTS
+  Serial.println();
+  Serial.println("==================================");
+
+  Serial.print("Run Number: ");
+  Serial.println(runNumber);
+
+
+  // Absolute accelerometer orientation
+  Serial.println();
+  Serial.println("[ Accelerometer Orientation ]");
+  Serial.print("X: ");
+  Serial.println(currentAccel[0], 3);
+  Serial.print("Y: ");
+  Serial.println(currentAccel[1], 3);
+  Serial.print("Z: ");
+  Serial.println(currentAccel[2], 3);
+
+  // Accelerometer changes
+  Serial.println();
+  Serial.println("[ Accelerometer Delta ]");
+  Serial.print("Raw: ");
+  Serial.print(deltaAccel[0], 3);
+  Serial.print(", ");
+  Serial.print(deltaAccel[1], 3);
+  Serial.print(", ");
+  Serial.println(deltaAccel[2], 3);
+
+  Serial.print("Simplified: ");
+  Serial.print(static_cast<int>(directions[0]));
+  Serial.print(", ");
+  Serial.print(static_cast<int>(directions[1]));
+  Serial.print(", ");
+  Serial.println(static_cast<int>(directions[2]));
+  Serial.print("Vector Change: ");
+  Serial.print(accelChangeMagnitude, 4);
+  Serial.println(" G");
+
+  // Corrected gyroscope readings
+  Serial.println();
+  Serial.println("[ Gyroscope ]");
+  Serial.print("Corrected: ");
+  Serial.print(currentGyro[0], 3);
+  Serial.print(", ");
+  Serial.print(currentGyro[1], 3);
+  Serial.print(", ");
+  Serial.println(currentGyro[2], 3);
+  Serial.print("Simplified: ");
+  Serial.print(static_cast<int>(directions[3]));
+  Serial.print(", ");
+  Serial.print(static_cast<int>(directions[4]));
+  Serial.print(", ");
+  Serial.println(static_cast<int>(directions[5]));
+  Serial.print("Angular Velocity Magnitude: ");
+  Serial.print(gyroMagnitude, 4);
+  Serial.println(" DPS");
+
+  // Stability
+  Serial.println();
+  Serial.println("[ Stability ]");
+  Serial.print("Acceleration: ");
+  Serial.println(
+      accelChangeMagnitude <= positionAccelChangeLimit
+      ? "STABLE"
+      : "UNSTABLE"
+  );
+  Serial.print("Gyroscope: ");
+  Serial.println(
+      gyroMagnitude <= gyroscopeMargin
+      ? "STABLE"
+      : "UNSTABLE"
+  );
+  Serial.print("Overall: ");
+  Serial.println(handSettled ? "SETTLED" : "MOVING");
+  Serial.print("Stable Reading Window: ");
+  Serial.print(
+      classificationUpdated
+      ? positionWindowSamples
+      : settledSampleCount
+  );
+  Serial.print(" / ");
+  Serial.println(positionWindowSamples);
+
+  // Classification information
+  Serial.println();
+  Serial.println("[ Position Classification ]");
+  Serial.print("Movement: ");
+  Serial.println(movementName(currentMovement));
+  Serial.print("Classification Updated: ");
+  Serial.println(classificationUpdated ? "YES" : "NO");
+  Serial.print("Nearest Distance: ");
+  if (nearestPositionDistance >= 0.0f) {
+      Serial.print(nearestPositionDistance, 4);
+      Serial.println(" G");
+  }
+  else {
+      Serial.println("N/A");
+  }
+  Serial.print("Second Nearest Distance: ");
+  if (secondPositionDistance >= 0.0f) {
+      Serial.print(secondPositionDistance, 4);
+      Serial.println(" G");
+  }
+
+  else {
+      Serial.println("N/A");
+  }
+
+  // Print Average Classification
+  if (classificationUpdated) {
+      Serial.println();
+      Serial.println("[ Average Position Input ]");
+      Serial.print("Accel: ");
+      Serial.print(averagedAccel[0], 2);
+      Serial.print(", ");
+      Serial.print(averagedAccel[1], 2);
+      Serial.print(", ");
+      Serial.println(averagedAccel[2], 2);
+
+      Serial.print("Gyro: ");
+      Serial.print(averagedGyro[0], 3);
+      Serial.print(", ");
+      Serial.print(averagedGyro[1], 3);
+      Serial.print(", ");
+      Serial.println(averagedGyro[2], 3);
+      Serial.println("Classification Window Complete.");
+  }
+
+  Serial.println("==================================");
+
+  // Update Counter
+  runNumber++;
 }
 
