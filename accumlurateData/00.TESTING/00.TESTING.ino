@@ -118,5 +118,11 @@ void loop() {
 
     float diff = 0;
 
+    agXYZ();
+    agOriginalXYZ();
+
     diff = diffVar(aXoriginal, aX);
+
+    Serial.print("Difference aX: ");
+    Serial.println(diff, 3);
 }
