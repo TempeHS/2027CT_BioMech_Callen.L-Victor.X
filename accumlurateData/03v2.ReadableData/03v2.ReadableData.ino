@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdint.h>
 
-LSM6DS3 myIMU(I2C_MODE, 0x6A); // Prepare Sensor
+LSM6DS3 myIMU(I2C_MODE, 0x6A);
 
 // ========== Current Status of Sensors ==========
 float aX = 0.000;
@@ -89,6 +89,12 @@ void setup() {
     Serial.print(",");
     Serial.println(gZ, 3);
 
+    delay(1000);
+
+    Serial.println();
+    Serial.println("End of Initialisation.");
+
+    Serial.println();
 }
 
 void loop() {
