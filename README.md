@@ -4,6 +4,15 @@
 
 <img src="./BioMedical_Mechatronics_Task/images/AccDataSteps! v1.png" width="100%" height="100%" alt="Progress Image of Accumulating Data Proj">
 
+> [!NOTE]
+> This README section below will be updated later, with 3v2 still updating.
+
+Changes in Iterations:
+1:
+2:
+3:
+3v2:
+
 ## Task Description
 ### Design Situation:
 Biomedical Engineering is the application of engineering principles to developing technologies and solving problems in a diverse range of healthcare-related fields. Biomedical Mechatronics is a branch of Biomedical Engineering specifically focused on engineering solutions using mechatronic components, including sensors, actuators, and feedback systems managed by processing and control systems.
