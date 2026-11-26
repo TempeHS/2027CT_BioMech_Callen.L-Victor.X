@@ -50,7 +50,6 @@ float diffVar(int variable1, int variable2) {
     return variable1 - variable2;
 }
 
-float aXdifference = diffVar(int aXoriginal, int aX);
 float aYdifference = 0.000;
 float aZdifference = 0.000;
 
@@ -115,7 +114,7 @@ void loop() {
     if (sensorReadyStatus == false) {
         return;
     }
-    
+
     float varDiff;
     diffVar(aXoriginal, aX);
 }
